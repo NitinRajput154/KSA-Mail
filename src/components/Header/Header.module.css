@@ -1,0 +1,64 @@
+.header {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 80px;
+    display: flex;
+    align-items: center;
+    z-index: 100;
+    background: white;
+}
+
+.headerContainer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-weight: 700;
+    font-size: 1.25rem;
+    color: var(--primary-green);
+}
+
+.logoImage {
+    object-fit: contain;
+}
+
+.nav {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+}
+
+.loginLink {
+    font-weight: 500;
+    color: var(--text-primary);
+    transition: color 0.2s;
+}
+
+.loginLink:hover {
+    color: var(--primary-green);
+}
+
+.signupButton {
+    background-color: var(--accent-green);
+    color: white;
+    padding: 0.75rem 1.5rem;
+    border-radius: var(--radius-md);
+    font-weight: 600;
+    transition: background-color 0.2s, transform 0.2s;
+}
+
+.signupButton:hover {
+    background-color: var(--accent-green-dark);
+}
+
+.signupButton:active {
+    transform: scale(0.98);
+}
