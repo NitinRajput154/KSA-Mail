@@ -1,12 +1,13 @@
 "use client";
 
 import { useSearchParams } from 'next/navigation';
+import { Suspense } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Check, ChevronLeft } from 'lucide-react';
 import styles from '../forgot-password/forgot-password.module.css'; // Reusing styles
 
-export default function CheckEmail() {
+function CheckEmailContent() {
     const searchParams = useSearchParams();
     const email = searchParams.get('email') || 'your-email@example.com';
 
@@ -33,5 +34,13 @@ export default function CheckEmail() {
                 </Link>
             </div>
         </div>
+    );
+}
+
+export default function CheckEmail() {
+    return (
+        <Suspense fallback={null}>
+            <CheckEmailContent />
+        </Suspense>
     );
 }
