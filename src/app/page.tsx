@@ -177,7 +177,7 @@ export default function Home() {
           <div className={styles.footerBranding}>
             <Image src="/logo.png" alt="KSA Mail" width={100} height={100} />
             <p className={styles.footerText}>Professional email hosting for Saudi enterprises.</p>
-            <Link href="mailto:support@ksamail.sa" className={styles.footerEmail}>support@ksamail.sa</Link>
+            <Link href="mailto:support@ksamail.com" className={styles.footerEmail}>support@ksamail.com</Link>
           </div>
           <div className={styles.footerBottom}>
             <p>© 2026 KSA Mail. All rights reserved.</p>

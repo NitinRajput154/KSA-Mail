@@ -39,8 +39,7 @@ export default function Login() {
                 <div className={styles.infoSide}>
                     <div className={styles.infoContent}>
                         <NextLink href="/" className={styles.logo}>
-                            <Image src="/logo.png" alt="KSA Mail" width={40} height={40} />
-                            <span>KSA Mail</span>
+                            <Image src="/logo.png" alt="KSA Mail" width={80} height={80} />
                         </NextLink>
 
                         <h1 className={styles.infoTitle}>
