@@ -1,7 +1,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { Shield, Headphones, Database, BarChart3, Globe, Users } from 'lucide-react';
-import styles from './page.module.css';
+import styles from '../page.module.css';
 
 export default function Home() {
   return (

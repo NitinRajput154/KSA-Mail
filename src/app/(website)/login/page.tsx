@@ -26,10 +26,37 @@ export default function Login() {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setLoading(true);
-        console.log('Logging in with:', formData);
-        await new Promise(resolve => setTimeout(resolve, 1500));
-        setLoading(false);
-        alert('Login simulated successful!');
+
+        try {
+            const response = await fetch('http://localhost:4000/auth/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    email: formData.email,
+                    password: formData.password,
+                }),
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.message || 'Login failed');
+            }
+
+            // Since we use httpOnly cookies in the backend for the token,
+            // we don't necessarily need to store it manually here if same-origin.
+            // But we can store user info in localStorage for UI state.
+
+            localStorage.setItem('user', JSON.stringify(data.user));
+            alert(`Welcome back, ${data.user.name}!`);
+            window.location.href = '/'; // Redirect to dashboard/home
+        } catch (error: any) {
+            alert(`Login Error: ${error.message}`);
+        } finally {
+            setLoading(false);
+        }
     };
 
     return (
