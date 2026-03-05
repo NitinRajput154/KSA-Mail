@@ -6,6 +6,8 @@ import Image from 'next/image';
 import { Shield, Globe, Server, Check, Eye, EyeOff, ChevronLeft, Database, Lock } from 'lucide-react';
 import styles from './login.module.css';
 
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
+
 export default function Login() {
     const [formData, setFormData] = useState({
         email: '',
@@ -28,7 +30,7 @@ export default function Login() {
         setLoading(true);
 
         try {
-            const response = await fetch('http://localhost:4000/auth/login', {
+            const response = await fetch(`${API_BASE}/auth/login`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
