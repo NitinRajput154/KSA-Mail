@@ -2,11 +2,13 @@
   overflow-x: hidden;
 }
 
+/* ═════════════════════════════════════════════════
+   HERO SLIDER
+   ═════════════════════════════════════════════════ */
 .hero {
   position: relative;
   min-height: 90vh;
   background-color: var(--primary-green);
-  background-image: url('/hero-bg.jpg');
   background-size: cover;
   background-position: center;
   color: white;
@@ -14,6 +16,7 @@
   align-items: center;
   padding-top: 120px;
   padding-bottom: 80px;
+  transition: background-image 0.6s ease;
 }
 
 .heroOverlay {
@@ -22,7 +25,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: linear-gradient(135deg, rgba(10, 88, 50, 0.9) 0%, rgba(13, 110, 63, 0.7) 100%);
+  transition: background 0.8s ease;
   z-index: 1;
 }
 
@@ -33,6 +36,22 @@
   grid-template-columns: 1.2fr 1fr;
   gap: 4rem;
   align-items: center;
+}
+
+.heroContent {
+  animation: fadeSlideIn 0.6s ease-out;
+}
+
+@keyframes fadeSlideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-30px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
 }
 
 .badge {
@@ -48,20 +67,19 @@
 }
 
 .heroTitle {
-  font-size: clamp(3rem, 6vw, 5.5rem);
+  font-size: clamp(2.5rem, 5vw, 4.5rem);
   margin-bottom: 2rem;
-  line-height: 1;
+  line-height: 1.1;
   font-weight: 800;
   letter-spacing: -0.02em;
 }
 
 .highlight {
   color: white;
-  /* Match image where it's all white or slightly accented */
 }
 
 .heroDescription {
-  font-size: 1.5rem;
+  font-size: 1.35rem;
   color: rgba(255, 255, 255, 0.8);
   margin-bottom: 3rem;
   max-width: 650px;
@@ -115,7 +133,73 @@
   font-weight: 500;
 }
 
-/* Hero Cards / Glassmorphism */
+/* ─── Slider Arrows ──────────────────────────── */
+.sliderArrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 10;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: white;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+}
+
+.sliderArrow:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: translateY(-50%) scale(1.1);
+}
+
+.sliderArrowLeft {
+  left: 2rem;
+}
+
+.sliderArrowRight {
+  right: 2rem;
+}
+
+/* ─── Slider Dots ────────────────────────────── */
+.sliderDots {
+  position: absolute;
+  bottom: 2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+  display: flex;
+  gap: 0.75rem;
+}
+
+.sliderDot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.3);
+  border: 2px solid rgba(255, 255, 255, 0.5);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  padding: 0;
+}
+
+.sliderDot:hover {
+  background: rgba(255, 255, 255, 0.6);
+}
+
+.sliderDotActive {
+  background: white;
+  border-color: white;
+  width: 32px;
+  border-radius: 6px;
+}
+
+/* ─── Hero Cards / Glassmorphism ─────────────── */
 .heroCards {
   display: flex;
   flex-direction: column;
@@ -197,7 +281,180 @@
   font-weight: 500;
 }
 
-/* Features Section */
+/* ═════════════════════════════════════════════════
+   SPONSOR ADS SECTION
+   ═════════════════════════════════════════════════ */
+.sponsorAds {
+  padding: 5rem 0 6rem;
+  background: linear-gradient(180deg, #f0fdf4 0%, #ffffff 100%);
+}
+
+.sponsorHeader {
+  text-align: center;
+  margin-bottom: 3.5rem;
+}
+
+.sponsorTitle {
+  font-size: 2.5rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  margin-top: 1rem;
+  letter-spacing: -0.01em;
+}
+
+.adsGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2rem;
+}
+
+.adCard {
+  background: white;
+  border-radius: 1.5rem;
+  overflow: hidden;
+  border: 1px solid var(--border-light);
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  display: flex;
+  flex-direction: column;
+  text-decoration: none;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+  position: relative;
+}
+
+.adCard::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, var(--primary-green), var(--accent-green));
+  transform: scaleX(0);
+  transition: transform 0.4s ease;
+}
+
+.adCard:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 24px 48px rgba(0, 0, 0, 0.12);
+  border-color: transparent;
+}
+
+.adCard:hover::after {
+  transform: scaleX(1);
+}
+
+.adImageArea {
+  position: relative;
+  height: 220px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  overflow: hidden;
+}
+
+.adImageArea::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, transparent 50%, rgba(255, 255, 255, 0.05) 100%);
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  z-index: 1;
+}
+
+.adCard:hover .adImageArea::before {
+  opacity: 1;
+}
+
+.adSponsorTag {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: rgba(0, 0, 0, 0.35);
+  backdrop-filter: blur(12px);
+  padding: 0.35rem 1rem;
+  border-radius: var(--radius-full);
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: white;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  z-index: 2;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.adPlaceholderIcon {
+  width: 88px;
+  height: 88px;
+  border-radius: 1.25rem;
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(12px);
+  border: 2px solid rgba(255, 255, 255, 0.25);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+  font-weight: 800;
+  color: white;
+  letter-spacing: 0.02em;
+  transition: transform 0.4s ease, background 0.4s ease;
+  z-index: 2;
+}
+
+.adCard:hover .adPlaceholderIcon {
+  transform: scale(1.08);
+  background: rgba(255, 255, 255, 0.25);
+}
+
+.adContent {
+  padding: 1.75rem 1.75rem 2rem;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.adSponsor {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--accent-green-dark);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.adTitle {
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0.6rem 0 0.5rem;
+  line-height: 1.3;
+}
+
+.adDescription {
+  font-size: 0.925rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  flex: 1;
+}
+
+.adArrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 1.25rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--primary-green);
+  transition: gap 0.3s ease;
+}
+
+.adCard:hover .adArrow {
+  gap: 0.85rem;
+}
+
+/* ═════════════════════════════════════════════════
+   FEATURES SECTION
+   ═════════════════════════════════════════════════ */
 .features {
   padding: 10rem 0;
   background: #fff;
@@ -288,7 +545,9 @@
   gap: 0.5rem;
 }
 
-/* Reliability Section */
+/* ═════════════════════════════════════════════════
+   RELIABILITY SECTION
+   ═════════════════════════════════════════════════ */
 .reliability {
   padding: 10rem 0;
   background: #fff;
@@ -340,7 +599,9 @@
   font-weight: 500;
 }
 
-/* CTA Section */
+/* ═════════════════════════════════════════════════
+   CTA SECTION
+   ═════════════════════════════════════════════════ */
 .cta {
   padding: 0 0 10rem;
   background: #fff;
@@ -385,7 +646,9 @@
   transform: scale(1.05);
 }
 
-/* Footer */
+/* ═════════════════════════════════════════════════
+   FOOTER
+   ═════════════════════════════════════════════════ */
 .footer {
   padding: 8rem 0 4rem;
   background: #fff;
@@ -436,8 +699,15 @@
   opacity: 0.3;
 }
 
+/* ═════════════════════════════════════════════════
+   RESPONSIVE
+   ═════════════════════════════════════════════════ */
 @media (max-width: 1200px) {
   .reliabilityGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .adsGrid {
     grid-template-columns: repeat(2, 1fr);
   }
 }
@@ -460,6 +730,14 @@
   .heroFooter {
     justify-content: center;
   }
+
+  .sliderArrowLeft {
+    left: 0.75rem;
+  }
+
+  .sliderArrowRight {
+    right: 0.75rem;
+  }
 }
 
 @media (max-width: 768px) {
@@ -468,18 +746,53 @@
   }
 
   .featureCard {
-    grid-template-columns: 1fr;
+    flex-direction: column;
     text-align: center;
     padding: 3rem 2rem;
+    gap: 2rem;
   }
 
   .featureIcon {
     margin: 0 auto;
   }
 
+  .featureCheck {
+    justify-content: center;
+  }
+
+  .adsGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .sponsorTitle {
+    font-size: 1.75rem;
+  }
+
+  .sliderArrow {
+    width: 40px;
+    height: 40px;
+  }
+
   .footerBottom {
     flex-direction: column;
     gap: 1.5rem;
     text-align: center;
+  }
+
+  .heroTitle {
+    font-size: 2rem;
+  }
+
+  .heroDescription {
+    font-size: 1.1rem;
+  }
+
+  .heroFooter {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .reliabilityGrid {
+    grid-template-columns: 1fr;
   }
 }

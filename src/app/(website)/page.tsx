@@ -1,28 +1,127 @@
+"use client";
+
+import { useState, useEffect, useCallback } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Shield, Headphones, Database, BarChart3, Globe, Users } from 'lucide-react';
+import { Shield, Headphones, Database, BarChart3, Globe, Users, ChevronLeft, ChevronRight } from 'lucide-react';
 import styles from '../page.module.css';
 
+// ─── Placeholder Banner Data (replace with API integration) ──────
+const BANNERS = [
+  {
+    id: 1,
+    title: 'Professional Email Service for Saudi Arabia',
+    subtitle: 'Reliable, encrypted, and scalable email hosting built for Saudi businesses and government-aligned enterprises.',
+    buttonText: 'Get Started Free',
+    buttonLink: '/signup',
+    bgColor: 'linear-gradient(135deg, rgba(10, 88, 50, 0.92) 0%, rgba(13, 110, 63, 0.85) 100%)',
+    image: '/hero-bg.jpg',
+  },
+  {
+    id: 2,
+    title: 'Enterprise-Grade Security & Compliance',
+    subtitle: '256-bit AES encryption, TLS 1.3, and full data sovereignty compliance with Saudi regulations.',
+    buttonText: 'Learn More',
+    buttonLink: '/signup',
+    bgColor: 'linear-gradient(135deg, rgba(6, 95, 70, 0.92) 0%, rgba(5, 150, 105, 0.85) 100%)',
+    image: '/hero-bg.jpg',
+  },
+  {
+    id: 3,
+    title: 'Dedicated Arabic Support 24/7',
+    subtitle: 'Get help when you need it from people who understand your business and speak your language.',
+    buttonText: 'Contact Us',
+    buttonLink: '/signup',
+    bgColor: 'linear-gradient(135deg, rgba(13, 148, 136, 0.92) 0%, rgba(6, 95, 70, 0.85) 100%)',
+    image: '/hero-bg.jpg',
+  },
+];
+
+// ─── Placeholder Ads Data (replace with API integration) ─────────
+const SPONSOR_ADS = [
+  {
+    id: 1,
+    title: 'Cloud Hosting Solutions',
+    description: 'High-performance cloud infrastructure for businesses across the Kingdom.',
+    image: null, // Set image URL from admin
+    link: '#',
+    sponsor: 'Saudi Cloud',
+    bgColor: '#0f766e',
+  },
+  {
+    id: 2,
+    title: 'Business Communication Suite',
+    description: 'Unified messaging, video conferencing, and collaboration tools for enterprises.',
+    image: null,
+    link: '#',
+    sponsor: 'CommConnect',
+    bgColor: '#065f46',
+  },
+  {
+    id: 3,
+    title: 'Cybersecurity Solutions',
+    description: 'Advanced threat protection and compliance solutions for Saudi organizations.',
+    image: null,
+    link: '#',
+    sponsor: 'SecureNet KSA',
+    bgColor: '#1e40af',
+  },
+];
+
 export default function Home() {
+  // ─── Banner Slider State ──────────────────────────────────
+  const [currentBanner, setCurrentBanner] = useState(0);
+  const [isAutoPlaying, setIsAutoPlaying] = useState(true);
+  const [slideDirection, setSlideDirection] = useState<'left' | 'right'>('right');
+
+  const goToSlide = useCallback((index: number) => {
+    setSlideDirection(index > currentBanner ? 'right' : 'left');
+    setCurrentBanner(index);
+  }, [currentBanner]);
+
+  const goNext = useCallback(() => {
+    setSlideDirection('right');
+    setCurrentBanner(prev => (prev + 1) % BANNERS.length);
+  }, []);
+
+  const goPrev = useCallback(() => {
+    setSlideDirection('left');
+    setCurrentBanner(prev => (prev - 1 + BANNERS.length) % BANNERS.length);
+  }, []);
+
+  // Auto-play
+  useEffect(() => {
+    if (!isAutoPlaying) return;
+    const timer = setInterval(goNext, 5000);
+    return () => clearInterval(timer);
+  }, [isAutoPlaying, goNext]);
+
+  const banner = BANNERS[currentBanner];
+
   return (
     <div className={styles.landing}>
-      {/* Hero Section */}
-      <section className={styles.hero}>
-        <div className={styles.heroOverlay}></div>
+      {/* ═══════════════════════════════════════════════════════
+          HERO SLIDER BANNER
+          ═══════════════════════════════════════════════════════ */}
+      <section
+        className={styles.hero}
+        style={{ backgroundImage: `url(${banner.image})` }}
+        onMouseEnter={() => setIsAutoPlaying(false)}
+        onMouseLeave={() => setIsAutoPlaying(true)}
+      >
+        <div
+          className={styles.heroOverlay}
+          style={{ background: banner.bgColor }}
+        ></div>
+
         <div className={`container ${styles.heroContainer}`}>
-          <div className={styles.heroContent}>
+          <div className={styles.heroContent} key={currentBanner}>
             <span className={styles.badge}>Professional Email Hosting</span>
-            <h1 className={styles.heroTitle}>
-              Professional Email Service for <br />
-              <span className={styles.highlight}>Saudi Arabia</span>
-            </h1>
-            <p className={styles.heroDescription}>
-              Reliable, encrypted, and scalable email hosting built for Saudi businesses
-              and government-aligned enterprises.
-            </p>
+            <h1 className={styles.heroTitle}>{banner.title}</h1>
+            <p className={styles.heroDescription}>{banner.subtitle}</p>
             <div className={styles.heroActions}>
-              <Link href="/signup" className={styles.primaryButton}>
-                Get Started Free <span className={styles.arrow}>→</span>
+              <Link href={banner.buttonLink} className={styles.primaryButton}>
+                {banner.buttonText} <span className={styles.arrow}>→</span>
               </Link>
               <Link href="/login" className={styles.outlineButton}>
                 Log In
@@ -72,6 +171,76 @@ export default function Home() {
                 <div className={styles.statLabel}>Support</div>
               </div>
             </div>
+          </div>
+        </div>
+
+        {/* Slider Controls */}
+        <button
+          className={`${styles.sliderArrow} ${styles.sliderArrowLeft}`}
+          onClick={goPrev}
+          aria-label="Previous banner"
+        >
+          <ChevronLeft size={24} />
+        </button>
+        <button
+          className={`${styles.sliderArrow} ${styles.sliderArrowRight}`}
+          onClick={goNext}
+          aria-label="Next banner"
+        >
+          <ChevronRight size={24} />
+        </button>
+
+        {/* Dots */}
+        <div className={styles.sliderDots}>
+          {BANNERS.map((_, index) => (
+            <button
+              key={index}
+              className={`${styles.sliderDot} ${index === currentBanner ? styles.sliderDotActive : ''}`}
+              onClick={() => goToSlide(index)}
+              aria-label={`Go to banner ${index + 1}`}
+            />
+          ))}
+        </div>
+      </section>
+
+      {/* ═══════════════════════════════════════════════════════
+          SPONSOR ADS SECTION
+          ═══════════════════════════════════════════════════════ */}
+      <section className={styles.sponsorAds}>
+        <div className="container">
+          <div className={styles.sponsorHeader}>
+            <span className={styles.sectionBadge}>Our Partners</span>
+            <h2 className={styles.sponsorTitle}>Trusted by Industry Leaders</h2>
+          </div>
+
+          <div className={styles.adsGrid}>
+            {SPONSOR_ADS.map((ad) => (
+              <a
+                key={ad.id}
+                href={ad.link}
+                className={styles.adCard}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <div
+                  className={styles.adImageArea}
+                  style={{ background: ad.image ? `url(${ad.image}) center/cover` : ad.bgColor }}
+                >
+                  <span className={styles.adSponsorTag}>Sponsored</span>
+                  {!ad.image && (
+                    <div className={styles.adPlaceholderIcon}>
+                      {ad.sponsor.charAt(0)}{ad.sponsor.charAt(ad.sponsor.indexOf(' ') + 1) || ''}
+                    </div>
+                  )}
+                </div>
+                <div className={styles.adContent}>
+                  <span className={styles.adSponsor}>{ad.sponsor}</span>
+                  <h3 className={styles.adTitle}>{ad.title}</h3>
+                  <p className={styles.adDescription}>{ad.description}</p>
+                  <span className={styles.adArrow}>Learn more →</span>
+                </div>
+              </a>
+            ))}
           </div>
         </div>
       </section>
