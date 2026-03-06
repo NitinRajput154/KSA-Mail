@@ -68,6 +68,37 @@ const SPONSOR_ADS = [
   },
 ];
 
+const STRIP_ADS = [
+  {
+    id: 1,
+    title: 'Cloud Enterprise Solutions',
+    description: 'Scalable infrastructure for the Saudi Vision 2030 digital transformation.',
+    image: '/ad-cloud.png',
+    sponsor: 'KSA Cloud'
+  },
+  {
+    id: 2,
+    title: 'Secure Communication',
+    description: 'End-to-end encrypted messaging and video for professional teams.',
+    image: '/ad-comm.png',
+    sponsor: 'CommConnect'
+  },
+  {
+    id: 3,
+    title: 'Advanced Cybersecurity',
+    description: 'Protecting your data with local Saudi compliance and global standards.',
+    image: '/ad-security.png',
+    sponsor: 'SecureNet'
+  },
+  {
+    id: 4,
+    title: 'Managed IT Services',
+    description: '24/7 expert support for your complete business technology stack.',
+    image: '/hero-banner-3.png',
+    sponsor: 'ITPro KSA'
+  },
+];
+
 export default function Home() {
   // ─── Banner Slider State ──────────────────────────────────
   const [currentBanner, setCurrentBanner] = useState(0);
@@ -105,72 +136,86 @@ export default function Home() {
           ═══════════════════════════════════════════════════════ */}
       <section
         className={styles.hero}
-        style={{ backgroundImage: `url(${banner.image})` }}
         onMouseEnter={() => setIsAutoPlaying(false)}
         onMouseLeave={() => setIsAutoPlaying(true)}
       >
-        <div
-          className={styles.heroOverlay}
-          style={{ background: banner.bgColor }}
-        ></div>
+        <div className={styles.heroSlider}>
+          <div
+            className={styles.heroTrack}
+            style={{ transform: `translateX(-${currentBanner * 100}%)` }}
+          >
+            {BANNERS.map((banner, index) => (
+              <div
+                key={banner.id}
+                className={`${styles.heroSlide} ${index === currentBanner ? styles.heroSlideActive : ''}`}
+                style={{ backgroundImage: `url(${banner.image})` }}
+              >
+                <div
+                  className={styles.heroSlideOverlay}
+                  style={{ background: banner.bgColor }}
+                ></div>
 
-        <div className={`container ${styles.heroContainer}`}>
-          <div className={styles.heroContent} key={currentBanner}>
-            <span className={styles.badge}>Professional Email Hosting</span>
-            <h1 className={styles.heroTitle}>{banner.title}</h1>
-            <p className={styles.heroDescription}>{banner.subtitle}</p>
-            <div className={styles.heroActions}>
-              <Link href={banner.buttonLink} className={styles.primaryButton}>
-                {banner.buttonText} <span className={styles.arrow}>→</span>
-              </Link>
-              <Link href="/login" className={styles.outlineButton}>
-                Log In
-              </Link>
-            </div>
-            <div className={styles.heroFooter}>
-              <span>✓ No setup fees</span>
-              <span>✓ 99.9% uptime SLA</span>
-              <span>✓ Saudi-hosted servers</span>
-            </div>
-          </div>
+                <div className={`container ${styles.heroContainer}`}>
+                  <div className={styles.heroContent}>
+                    <span className={styles.badge}>Professional Email Hosting</span>
+                    <h1 className={styles.heroTitle}>{banner.title}</h1>
+                    <p className={styles.heroDescription}>{banner.subtitle}</p>
+                    <div className={styles.heroActions}>
+                      <Link href={banner.buttonLink} className={styles.primaryButton}>
+                        {banner.buttonText} <span className={styles.arrow}>→</span>
+                      </Link>
+                      <Link href="/login" className={styles.outlineButton}>
+                        Log In
+                      </Link>
+                    </div>
+                    <div className={styles.heroFooter}>
+                      <span>✓ No setup fees</span>
+                      <span>✓ 99.9% uptime SLA</span>
+                      <span>✓ Saudi-hosted servers</span>
+                    </div>
+                  </div>
 
-          <div className={styles.heroCards}>
-            <div className={styles.glassCard}>
-              <p className={styles.cardInfo}>TRUSTED BY LEADING COMPANIES</p>
-              <div className={styles.companyGrid}>
-                <div className={styles.companyItem}>
-                  <div className={styles.logoBadge}>TC</div>
-                  <span className={styles.companyName}>TechCorp</span>
-                </div>
-                <div className={styles.companyItem}>
-                  <div className={styles.logoBadge}>GN</div>
-                  <span className={styles.companyName}>GlobalNet</span>
-                </div>
-                <div className={styles.companyItem}>
-                  <div className={styles.logoBadge}>DS</div>
-                  <span className={styles.companyName}>DataSync</span>
-                </div>
-                <div className={styles.companyItem}>
-                  <div className={styles.logoBadge}>CB</div>
-                  <span className={styles.companyName}>CloudBase</span>
-                </div>
-              </div>
-            </div>
+                  <div className={styles.heroCards}>
+                    <div className={styles.glassCard}>
+                      <p className={styles.cardInfo}>TRUSTED BY LEADING COMPANIES</p>
+                      <div className={styles.companyGrid}>
+                        <div className={styles.companyItem}>
+                          <div className={styles.logoBadge}>TC</div>
+                          <span className={styles.companyName}>TechCorp</span>
+                        </div>
+                        <div className={styles.companyItem}>
+                          <div className={styles.logoBadge}>GN</div>
+                          <span className={styles.companyName}>GlobalNet</span>
+                        </div>
+                        <div className={styles.companyItem}>
+                          <div className={styles.logoBadge}>DS</div>
+                          <span className={styles.companyName}>DataSync</span>
+                        </div>
+                        <div className={styles.companyItem}>
+                          <div className={styles.logoBadge}>CB</div>
+                          <span className={styles.companyName}>CloudBase</span>
+                        </div>
+                      </div>
+                    </div>
 
-            <div className={styles.statsHorizontal}>
-              <div className={styles.statGlass}>
-                <div className={styles.statValue}>50K+</div>
-                <div className={styles.statLabel}>Active Users</div>
+                    <div className={styles.statsHorizontal}>
+                      <div className={styles.statGlass}>
+                        <div className={styles.statValue}>50K+</div>
+                        <div className={styles.statLabel}>Active Users</div>
+                      </div>
+                      <div className={styles.statGlass}>
+                        <div className={styles.statValue}>99.9%</div>
+                        <div className={styles.statLabel}>Uptime</div>
+                      </div>
+                      <div className={styles.statGlass}>
+                        <div className={styles.statValue}>24/7</div>
+                        <div className={styles.statLabel}>Support</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
-              <div className={styles.statGlass}>
-                <div className={styles.statValue}>99.9%</div>
-                <div className={styles.statLabel}>Uptime</div>
-              </div>
-              <div className={styles.statGlass}>
-                <div className={styles.statValue}>24/7</div>
-                <div className={styles.statLabel}>Support</div>
-              </div>
-            </div>
+            ))}
           </div>
         </div>
 
@@ -331,6 +376,35 @@ export default function Home() {
               <p>Active Businesses</p>
               <small>Trusted across the Kingdom</small>
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ═══════════════════════════════════════════════════════
+          HORIZONTAL AD STRIP
+          ═══════════════════════════════════════════════════════ */}
+      <section className={styles.adStripSection}>
+        <div className={styles.adStripHeader}>
+          <h3>Featured Partners</h3>
+        </div>
+        <div className={styles.adScrollingWrapper}>
+          <div className={styles.adScrollingTrack}>
+            {[...STRIP_ADS, ...STRIP_ADS].map((ad, index) => (
+              <div key={`${ad.id}-${index}`} className={styles.adStripItem}>
+                <Image
+                  src={ad.image}
+                  alt={ad.title}
+                  fill
+                  style={{ objectFit: 'cover' }}
+                />
+                <div className={styles.adBadgeStrip}>Sponsored</div>
+                <div className={styles.adStripOverlay}>
+                  <span>{ad.sponsor}</span>
+                  <h4>{ad.title}</h4>
+                  <p>{ad.description}</p>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       </section>

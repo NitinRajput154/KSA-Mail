@@ -24,12 +24,12 @@ export default function ForgotPassword() {
         <div className={styles.forgotPasswordPage}>
             <div className={styles.card}>
                 <Link href="/" className={styles.logo}>
-                    <Image src="/logo.png" alt="KSA Mail" width={80} height={80} />
+                    <Image src="/logo.png" alt="KSA Mail" width={150} height={150} className={styles.logoImg} />
                 </Link>
 
                 <div className={styles.cardHeader}>
                     <h2>Forgot Password</h2>
-                    <p>No worries. Enter your email address and we'll send you a link to reset your password.</p>
+                    <p>No worries. Enter your recovery email address and we'll send you a link to reset your password.</p>
                 </div>
 
                 <form className={styles.form} onSubmit={handleSubmit}>

@@ -8,24 +8,39 @@
 .hero {
   position: relative;
   min-height: 90vh;
-  background-color: var(--primary-green);
+  color: white;
+  overflow: hidden;
+}
+
+.heroSlider {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.heroTrack {
+  display: flex;
+  height: 100%;
+  transition: transform 0.8s cubic-bezier(0.65, 0, 0.35, 1);
+}
+
+.heroSlide {
+  min-width: 100%;
+  height: 100%;
+  position: relative;
   background-size: cover;
   background-position: center;
-  color: white;
   display: flex;
   align-items: center;
   padding-top: 120px;
   padding-bottom: 80px;
-  transition: background-image 0.6s ease;
 }
 
-.heroOverlay {
+.heroSlideOverlay {
   position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  transition: background 0.8s ease;
+  inset: 0;
   z-index: 1;
 }
 
@@ -36,22 +51,18 @@
   grid-template-columns: 1.2fr 1fr;
   gap: 4rem;
   align-items: center;
+  width: 100%;
 }
 
 .heroContent {
-  animation: fadeSlideIn 0.6s ease-out;
+  opacity: 0;
+  transform: translateX(-30px);
+  transition: all 0.8s ease-out;
 }
 
-@keyframes fadeSlideIn {
-  from {
-    opacity: 0;
-    transform: translateX(-30px);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
+.heroSlideActive .heroContent {
+  opacity: 1;
+  transform: translateX(0);
 }
 
 .badge {
@@ -603,6 +614,7 @@
    CTA SECTION
    ═════════════════════════════════════════════════ */
 .cta {
+  margin-top: 10rem;
   padding: 0 0 10rem;
   background: #fff;
 }
@@ -876,5 +888,149 @@
 
   .reliabilityGrid {
     grid-template-columns: 1fr;
+  }
+}
+
+/* ═════════════════════════════════════════════════
+   SCROLLING ADS STRIP
+   ═════════════════════════════════════════════════ */
+.adStripSection {
+  padding: 4rem 0;
+  background: #f8fafc;
+  overflow: hidden;
+  border-top: 1px solid var(--border-light);
+  border-bottom: 1px solid var(--border-light);
+}
+
+.adStripHeader {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.adStripHeader h3 {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #64748b;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  letter-spacing: 0.2rem;
+  text-transform: uppercase;
+}
+
+.adStripHeader h3::before,
+.adStripHeader h3::after {
+  content: "";
+  height: 1px;
+  width: 60px;
+  background: #cbd5e1;
+}
+
+.adScrollingWrapper {
+  display: flex;
+  overflow: hidden;
+  width: 100%;
+}
+
+.adScrollingTrack {
+  display: flex;
+  width: fit-content;
+  animation: marquee 60s linear infinite;
+  gap: 2rem;
+}
+
+.adScrollingTrack:hover {
+  animation-play-state: paused;
+}
+
+.adStripItem {
+  flex: 0 0 500px;
+  height: 250px;
+  position: relative;
+  border-radius: 1.5rem;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+  transition: all 0.4s ease;
+  cursor: pointer;
+}
+
+.adStripItem:hover {
+  transform: translateY(-8px) scale(1.02);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+}
+
+.adStripOverlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(0deg, rgba(0, 0, 0, 0.7) 0%, transparent 60%);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 2rem;
+  color: white;
+  transition: all 0.3s ease;
+}
+
+.adStripItem:hover .adStripOverlay {
+  background: linear-gradient(0deg, rgba(0, 0, 0, 0.8) 0%, transparent 50%);
+}
+
+.adStripOverlay h4 {
+  font-size: 1.25rem;
+  font-weight: 800;
+  margin-bottom: 0.5rem;
+  color: white;
+}
+
+.adStripOverlay p {
+  font-size: 0.95rem;
+  opacity: 0.9;
+  line-height: 1.4;
+}
+
+.adBadgeStrip {
+  position: absolute;
+  top: 1.25rem;
+  right: 1.25rem;
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(8px);
+  padding: 0.35rem 0.85rem;
+  border-radius: 2rem;
+  font-size: 0.75rem;
+  font-weight: 800;
+  color: white;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  z-index: 2;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+@keyframes marquee {
+  0% {
+    transform: translateX(0);
+  }
+
+  100% {
+    transform: translateX(calc(-50% - 1rem));
+  }
+}
+
+@media (max-width: 1024px) {
+  .adStripItem {
+    flex: 0 0 400px;
+    height: 200px;
+  }
+}
+
+@media (max-width: 640px) {
+  .adStripItem {
+    flex: 0 0 320px;
+    height: 180px;
+  }
+
+  .adStripHeader h3::before,
+  .adStripHeader h3::after {
+    width: 30px;
   }
 }
