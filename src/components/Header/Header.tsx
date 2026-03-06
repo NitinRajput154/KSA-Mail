@@ -10,8 +10,8 @@ const Header = () => {
           <Image
             src="/logo.png"
             alt="KSA Mail Logo"
-            width={120}
-            height={120}
+            width={150}
+            height={150}
             className={styles.logoImage}
           />
         </Link>
