@@ -8,7 +8,7 @@ const Header = () => {
       <div className={`container ${styles.headerContainer}`}>
         <Link href="/" className={styles.logo}>
           <Image
-            src="/logo.png"
+            src="/header-logo.png"
             alt="KSA Mail Logo"
             width={150}
             height={150}

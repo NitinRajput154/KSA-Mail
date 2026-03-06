@@ -24,7 +24,7 @@ export default function ForgotPassword() {
         <div className={styles.forgotPasswordPage}>
             <div className={styles.card}>
                 <Link href="/" className={styles.logo}>
-                    <Image src="/logo.png" alt="KSA Mail" width={150} height={150} className={styles.logoImg} />
+                    <Image src="/header-logo.png" alt="KSA Mail" width={150} height={150} className={styles.logoImg} />
                 </Link>
 
                 <div className={styles.cardHeader}>

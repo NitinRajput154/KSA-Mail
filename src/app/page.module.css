@@ -467,6 +467,7 @@
    FEATURES SECTION
    ═════════════════════════════════════════════════ */
 .features {
+  margin-top: -10rem;
   padding: 10rem 0;
   background: #fff;
 }
@@ -560,6 +561,7 @@
    RELIABILITY SECTION
    ═════════════════════════════════════════════════ */
 .reliability {
+  margin-top: -10rem;
   padding: 10rem 0;
   background: #fff;
 }
@@ -682,15 +684,13 @@
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  margin-bottom: 1.25rem;
+  margin-bottom: 0.2rem;
 }
 
-.footerLogoImg {
-  border-radius: 0.75rem;
+.footerLogo {
   object-fit: contain;
-  background: rgba(255, 255, 255, 0.95);
-  padding: 6px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  margin-top: -1rem;
+  /* Adjust alignment to feel good */
 }
 
 .footerLogoName {

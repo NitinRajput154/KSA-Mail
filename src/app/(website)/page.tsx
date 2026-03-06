@@ -429,8 +429,7 @@ export default function Home() {
             {/* Brand Column */}
             <div className={styles.footerBrand}>
               <div className={styles.footerLogoRow}>
-                <Image src="/logo.png" alt="KSA Mail" width={150} height={150} className={styles.footerLogoImg} />
-                {/* <span className={styles.footerLogoName}>KSA Mail</span> */}
+                <Image src="/logo.png" alt="KSA Mail" width={180} height={180} className={styles.footerLogo} />
               </div>
               <p className={styles.footerBrandDesc}>
                 Professional, secure, and scalable email hosting built for Saudi businesses and government-aligned enterprises.
