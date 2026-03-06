@@ -237,7 +237,7 @@ export default function Signup() {
                 <div className={styles.infoSide}>
                     <div className={styles.infoContent}>
                         <Link href="/" className={styles.logo}>
-                            <Image src="/logo.png" alt="KSA Mail" width={80} height={80} />
+                            <Image src="/logo.png" alt="KSA Mail" width={150} height={150} className={styles.logoImg} />
                         </Link>
 
                         <div className={styles.badge}>

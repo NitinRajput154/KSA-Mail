@@ -1,5 +1,4 @@
 export const mockStats = {
-    totalDomains: 124,
     totalMailboxes: 1250,
     activeUsers: 842,
     storageUsed: 65, // percentage
@@ -14,18 +13,11 @@ export const mockStats = {
     ]
 };
 
-export const mockDomains = [
-    { id: '1', name: 'google.com', mailboxes: 45, dkim: 'valid', spf: 'valid', status: 'active', usage: 12.5 },
-    { id: '2', name: 'apple.com', mailboxes: 120, dkim: 'valid', spf: 'invalid', status: 'active', usage: 45.2 },
-    { id: '3', name: 'microsoft.com', mailboxes: 89, dkim: 'error', spf: 'valid', status: 'suspended', usage: 8.1 },
-    { id: '4', name: 'amazon.sa', mailboxes: 32, dkim: 'valid', spf: 'valid', status: 'active', usage: 22.0 },
-];
-
 export const mockMailboxes = [
-    { id: '1', email: 'admin@google.com', domain: 'google.com', quota: '5GB', used: '1.2GB', status: 'active', lastLogin: '10 mins ago' },
-    { id: '2', email: 'info@apple.com', domain: 'apple.com', quota: '2GB', used: '1.8GB', status: 'active', lastLogin: '2 hours ago' },
-    { id: '3', email: 'support@amazon.sa', domain: 'amazon.sa', quota: '10GB', used: '0.4GB', status: 'active', lastLogin: 'Yesterday' },
-    { id: '4', email: 'test@microsoft.com', domain: 'microsoft.com', quota: '1GB', used: '0.9GB', status: 'suspended', lastLogin: '1 week ago' },
+    { id: '1', email: 'admin@ksamail.com', domain: 'ksamail.com', quota: '5GB', used: '1.2GB', status: 'active', lastLogin: '10 mins ago' },
+    { id: '2', email: 'info@ksamail.com', domain: 'ksamail.com', quota: '2GB', used: '1.8GB', status: 'active', lastLogin: '2 hours ago' },
+    { id: '3', email: 'support@ksamail.com', domain: 'ksamail.com', quota: '10GB', used: '0.4GB', status: 'active', lastLogin: 'Yesterday' },
+    { id: '4', email: 'test@ksamail.com', domain: 'ksamail.com', quota: '1GB', used: '0.9GB', status: 'suspended', lastLogin: '1 week ago' },
 ];
 
 export const mockLogs = [

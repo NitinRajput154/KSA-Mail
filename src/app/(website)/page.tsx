@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { Shield, Headphones, Database, BarChart3, Globe, Users, ChevronLeft, ChevronRight } from 'lucide-react';
 import styles from '../page.module.css';
 
-// ─── Placeholder Banner Data (replace with API integration) ──────
+// ─── Banner Data (replace with API integration) ──────
 const BANNERS = [
   {
     id: 1,
@@ -14,8 +14,8 @@ const BANNERS = [
     subtitle: 'Reliable, encrypted, and scalable email hosting built for Saudi businesses and government-aligned enterprises.',
     buttonText: 'Get Started Free',
     buttonLink: '/signup',
-    bgColor: 'linear-gradient(135deg, rgba(10, 88, 50, 0.92) 0%, rgba(13, 110, 63, 0.85) 100%)',
-    image: '/hero-bg.jpg',
+    bgColor: 'linear-gradient(135deg, rgba(10, 88, 50, 0.82) 0%, rgba(13, 110, 63, 0.75) 100%)',
+    image: '/hero-banner-1.png',
   },
   {
     id: 2,
@@ -23,8 +23,8 @@ const BANNERS = [
     subtitle: '256-bit AES encryption, TLS 1.3, and full data sovereignty compliance with Saudi regulations.',
     buttonText: 'Learn More',
     buttonLink: '/signup',
-    bgColor: 'linear-gradient(135deg, rgba(6, 95, 70, 0.92) 0%, rgba(5, 150, 105, 0.85) 100%)',
-    image: '/hero-bg.jpg',
+    bgColor: 'linear-gradient(135deg, rgba(6, 95, 70, 0.82) 0%, rgba(5, 150, 105, 0.75) 100%)',
+    image: '/hero-banner-2.png',
   },
   {
     id: 3,
@@ -32,18 +32,18 @@ const BANNERS = [
     subtitle: 'Get help when you need it from people who understand your business and speak your language.',
     buttonText: 'Contact Us',
     buttonLink: '/signup',
-    bgColor: 'linear-gradient(135deg, rgba(13, 148, 136, 0.92) 0%, rgba(6, 95, 70, 0.85) 100%)',
-    image: '/hero-bg.jpg',
+    bgColor: 'linear-gradient(135deg, rgba(13, 148, 136, 0.82) 0%, rgba(6, 95, 70, 0.75) 100%)',
+    image: '/hero-banner-3.png',
   },
 ];
 
-// ─── Placeholder Ads Data (replace with API integration) ─────────
+// ─── Ads Data (replace with API integration) ─────────
 const SPONSOR_ADS = [
   {
     id: 1,
     title: 'Cloud Hosting Solutions',
-    description: 'High-performance cloud infrastructure for businesses across the Kingdom.',
-    image: null, // Set image URL from admin
+    description: 'High-performance cloud infrastructure for businesses across the Kingdom. Scale seamlessly with enterprise-grade reliability.',
+    image: '/ad-cloud.png',
     link: '#',
     sponsor: 'Saudi Cloud',
     bgColor: '#0f766e',
@@ -51,8 +51,8 @@ const SPONSOR_ADS = [
   {
     id: 2,
     title: 'Business Communication Suite',
-    description: 'Unified messaging, video conferencing, and collaboration tools for enterprises.',
-    image: null,
+    description: 'Unified messaging, video conferencing, and collaboration tools designed for modern enterprises.',
+    image: '/ad-comm.png',
     link: '#',
     sponsor: 'CommConnect',
     bgColor: '#065f46',
@@ -60,8 +60,8 @@ const SPONSOR_ADS = [
   {
     id: 3,
     title: 'Cybersecurity Solutions',
-    description: 'Advanced threat protection and compliance solutions for Saudi organizations.',
-    image: null,
+    description: 'Advanced threat protection and compliance solutions built specifically for Saudi organizations.',
+    image: '/ad-security.png',
     link: '#',
     sponsor: 'SecureNet KSA',
     bgColor: '#1e40af',
@@ -224,8 +224,16 @@ export default function Home() {
               >
                 <div
                   className={styles.adImageArea}
-                  style={{ background: ad.image ? `url(${ad.image}) center/cover` : ad.bgColor }}
+                  style={{ background: !ad.image ? ad.bgColor : undefined }}
                 >
+                  {ad.image && (
+                    <Image
+                      src={ad.image}
+                      alt={ad.title}
+                      fill
+                      style={{ objectFit: 'cover' }}
+                    />
+                  )}
                   <span className={styles.adSponsorTag}>Sponsored</span>
                   {!ad.image && (
                     <div className={styles.adPlaceholderIcon}>
@@ -340,14 +348,46 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Footer Branding */}
+      {/* Footer */}
       <footer className={styles.footer}>
         <div className="container">
-          <div className={styles.footerBranding}>
-            <Image src="/logo.png" alt="KSA Mail" width={100} height={100} />
-            <p className={styles.footerText}>Professional email hosting for Saudi enterprises.</p>
-            <Link href="mailto:support@ksamail.com" className={styles.footerEmail}>support@ksamail.com</Link>
+          <div className={styles.footerGrid}>
+            {/* Brand Column */}
+            <div className={styles.footerBrand}>
+              <div className={styles.footerLogoRow}>
+                <Image src="/logo.png" alt="KSA Mail" width={150} height={150} className={styles.footerLogoImg} />
+                {/* <span className={styles.footerLogoName}>KSA Mail</span> */}
+              </div>
+              <p className={styles.footerBrandDesc}>
+                Professional, secure, and scalable email hosting built for Saudi businesses and government-aligned enterprises.
+              </p>
+              <div className={styles.footerSocials}>
+                <a href="#" className={styles.socialIcon} aria-label="Twitter">𝕏</a>
+                <a href="#" className={styles.socialIcon} aria-label="LinkedIn">in</a>
+                <a href="#" className={styles.socialIcon} aria-label="Instagram">◉</a>
+              </div>
+            </div>
+
+            {/* Quick Links */}
+            <div className={styles.footerColumn}>
+              <h4 className={styles.footerColumnTitle}>Quick Links</h4>
+              <Link href="/signup" className={styles.footerLink}>Create Account</Link>
+              <Link href="/login" className={styles.footerLink}>Sign In</Link>
+              <Link href="#" className={styles.footerLink}>Privacy Policy</Link>
+              <Link href="#" className={styles.footerLink}>Terms of Service</Link>
+            </div>
+
+            {/* Contact */}
+            <div className={styles.footerColumn}>
+              <h4 className={styles.footerColumnTitle}>Contact</h4>
+              <Link href="mailto:support@ksamail.com" className={styles.footerLink}>support@ksamail.com</Link>
+              <span className={styles.footerLink}>Riyadh, Saudi Arabia</span>
+              <span className={styles.footerLink}>24/7 Support Available</span>
+            </div>
           </div>
+
+          <div className={styles.footerDivider}></div>
+
           <div className={styles.footerBottom}>
             <p>© 2026 KSA Mail. All rights reserved.</p>
             <div className={styles.footerLinks}>

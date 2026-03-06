@@ -1,5 +1,4 @@
 import {
-    Globe,
     Mail,
     Users,
     Database,
@@ -22,12 +21,6 @@ export default function Dashboard() {
             </div>
 
             <div className={styles.statGrid}>
-                <StatCard
-                    title="Total Domains"
-                    value={mockStats.totalDomains}
-                    icon={Globe}
-                    trend={{ value: '12%', positive: true }}
-                />
                 <StatCard
                     title="Total Mailboxes"
                     value={mockStats.totalMailboxes}

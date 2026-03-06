@@ -4,7 +4,6 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import {
     LayoutDashboard,
-    Globe,
     Mail,
     Users,
     ShieldCheck,
@@ -17,7 +16,6 @@ import styles from '@/app/admin/admin.module.css';
 
 const navigation = [
     { name: 'Dashboard', href: '/admin', icon: LayoutDashboard },
-    { name: 'Domains', href: '/admin/domains', icon: Globe },
     { name: 'Mailboxes', href: '/admin/mailboxes', icon: Mail },
     { name: 'Users', href: '/admin/users', icon: Users },
     { name: 'Security', href: '/admin/security', icon: ShieldCheck },
