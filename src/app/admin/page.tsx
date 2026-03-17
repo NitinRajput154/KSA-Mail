@@ -23,9 +23,14 @@ export default function Dashboard() {
 
     useEffect(() => {
         const fetchDashboardData = async () => {
+            const tokenMatch = document.cookie.match(/(?:^|; )access_token=([^;]*)/);
+            const token = tokenMatch ? tokenMatch[1] : '';
+            const headers = { 'Authorization': `Bearer ${token}` };
+
             try {
                 // Fetch Overview Stats
                 const statsRes = await fetch(`${API_BASE}/admin/stats/overview`, {
+                    headers,
                     credentials: 'true' === 'true' ? 'include' : 'same-origin'
                 });
                 if (statsRes.ok) {
@@ -34,6 +39,7 @@ export default function Dashboard() {
 
                 // Fetch Health
                 const healthRes = await fetch(`${API_BASE}/admin/stats/health`, {
+                    headers,
                     credentials: 'true' === 'true' ? 'include' : 'same-origin'
                 });
                 if (healthRes.ok) {

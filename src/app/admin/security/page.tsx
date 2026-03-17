@@ -18,9 +18,15 @@ export default function SecuritySettingsPage() {
     const [securityData, setSecurityData] = useState<any>(null);
     const [loading, setLoading] = useState(true);
 
+    const getAuthHeaders = (): Record<string, string> => {
+        const tokenMatch = document.cookie.match(/(?:^|; )access_token=([^;]*)/);
+        return tokenMatch ? { 'Authorization': `Bearer ${tokenMatch[1]}` } : {};
+    };
+
     const fetchSecurityData = async () => {
         try {
             const res = await fetch(`${API_BASE}/admin/security`, {
+                headers: { ...getAuthHeaders() },
                 credentials: 'true' === 'true' ? 'include' : 'same-origin'
             });
             if (res.ok) {
@@ -42,7 +48,7 @@ export default function SecuritySettingsPage() {
         try {
             const res = await fetch(`${API_BASE}/admin/security/unban`, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: { 'Content-Type': 'application/json', ...getAuthHeaders() },
                 credentials: 'true' === 'true' ? 'include' : 'same-origin',
                 body: JSON.stringify({ ip })
             });

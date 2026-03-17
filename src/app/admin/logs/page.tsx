@@ -26,10 +26,16 @@ export default function LogsPage() {
     const [currentPage, setCurrentPage] = useState(1);
     const logsPerPage = 50;
 
+    const getAuthHeaders = (): Record<string, string> => {
+        const tokenMatch = document.cookie.match(/(?:^|; )access_token=([^;]*)/);
+        return tokenMatch ? { 'Authorization': `Bearer ${tokenMatch[1]}` } : {};
+    };
+
     const fetchLogs = async () => {
         setLoading(true);
         try {
             const res = await fetch(`${API_BASE}/admin/logs`, {
+                headers: { ...getAuthHeaders() },
                 credentials: 'true' === 'true' ? 'include' : 'same-origin'
             });
             if (res.ok) {

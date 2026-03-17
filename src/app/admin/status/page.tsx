@@ -20,10 +20,16 @@ export default function SystemStatusPage() {
     const [loading, setLoading] = useState(true);
     const [lastRefresh, setLastRefresh] = useState(new Date().toLocaleTimeString());
 
+    const getAuthHeaders = (): Record<string, string> => {
+        const tokenMatch = document.cookie.match(/(?:^|; )access_token=([^;]*)/);
+        return tokenMatch ? { 'Authorization': `Bearer ${tokenMatch[1]}` } : {};
+    };
+
     const fetchHealth = async () => {
         setLoading(true);
         try {
             const res = await fetch(`${API_BASE}/admin/stats/health`, {
+                headers: { ...getAuthHeaders() },
                 credentials: 'true' === 'true' ? 'include' : 'same-origin'
             });
             if (res.ok) {

@@ -21,10 +21,16 @@ export default function UsersPage() {
 
     const [form, setForm] = useState({ name: '', email: '', role: 'ADMIN' });
 
+    const getAuthHeaders = (): Record<string, string> => {
+        const tokenMatch = document.cookie.match(/(?:^|; )access_token=([^;]*)/);
+        return tokenMatch ? { 'Authorization': `Bearer ${tokenMatch[1]}` } : {};
+    };
+
     const fetchAdmins = async () => {
         setLoading(true);
         try {
             const res = await fetch(`${API_BASE}/admin/users`, {
+                headers: { ...getAuthHeaders() },
                 credentials: 'true' === 'true' ? 'include' : 'same-origin'
             });
             if (res.ok) {
@@ -46,7 +52,7 @@ export default function UsersPage() {
         try {
             const res = await fetch(`${API_BASE}/admin/users`, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: { 'Content-Type': 'application/json', ...getAuthHeaders() },
                 credentials: 'true' === 'true' ? 'include' : 'same-origin',
                 body: JSON.stringify(form)
             });
@@ -68,6 +74,7 @@ export default function UsersPage() {
         try {
             const res = await fetch(`${API_BASE}/admin/users/${id}`, {
                 method: 'DELETE',
+                headers: { ...getAuthHeaders() },
                 credentials: 'true' === 'true' ? 'include' : 'same-origin'
             });
             if (res.ok) {
