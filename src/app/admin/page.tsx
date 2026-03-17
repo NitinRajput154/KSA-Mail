@@ -1,16 +1,117 @@
+"use client";
+
+import { useState, useEffect } from 'react';
 import {
     Mail,
     Users,
     Database,
-    Clock
+    Clock,
+    Activity
 } from 'lucide-react';
 import StatCard from '@/components/admin/StatCard';
 import AdminTable from '@/components/admin/AdminTable';
 import StatusBadge from '@/components/admin/StatusBadge';
-import { mockStats, mockLogs } from '@/lib/mockData';
+import { mockLogs } from '@/lib/mockData';
 import styles from './admin.module.css';
 
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
+
 export default function Dashboard() {
+    const [stats, setStats] = useState<any>(null);
+    const [health, setHealth] = useState<any>(null);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchDashboardData = async () => {
+            try {
+                // Fetch Overview Stats
+                const statsRes = await fetch(`${API_BASE}/admin/stats/overview`, {
+                    credentials: 'true' === 'true' ? 'include' : 'same-origin'
+                });
+                if (statsRes.ok) {
+                    setStats(await statsRes.json());
+                }
+
+                // Fetch Health
+                const healthRes = await fetch(`${API_BASE}/admin/stats/health`, {
+                    credentials: 'true' === 'true' ? 'include' : 'same-origin'
+                });
+                if (healthRes.ok) {
+                    setHealth(await healthRes.json());
+                }
+            } catch (err) {
+                console.error("Failed to load dashboard data:", err);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchDashboardData();
+    }, []);
+
+    // Helper functions for parsing
+    const formatBytes = (bytes: number) => {
+        if (!bytes) return "0.00 GB";
+        return (bytes / (1024 * 1024 * 1024)).toFixed(2) + " GB"; // converting bytes to GB
+    };
+
+    const getServicesList = () => {
+        if (!health || !health.containers) return [
+            { label: 'SMTP Server', status: 'Offline', color: '#ef4444' },
+            { label: 'IMAP Server', status: 'Offline', color: '#ef4444' },
+            { label: 'Spam Assassin', status: 'Offline', color: '#ef4444' },
+            { label: 'Redis Cache', status: 'Offline', color: '#ef4444' },
+        ];
+
+        const containers = health.containers;
+
+        return [
+            { 
+               label: 'Postfix SMTP', 
+               status: containers['postfix-mailcow']?.state === 'running' ? 'Online' : 'Warning', 
+               color: containers['postfix-mailcow']?.state === 'running' ? '#10b981' : '#f59e0b' 
+            },
+            { 
+               label: 'Dovecot IMAP', 
+               status: containers['dovecot-mailcow']?.state === 'running' ? 'Online' : 'Warning', 
+               color: containers['dovecot-mailcow']?.state === 'running' ? '#10b981' : '#f59e0b' 
+            },
+            { 
+               label: 'Rspamd filter', 
+               status: containers['rspamd-mailcow']?.state === 'running' ? 'Online' : 'Warning', 
+               color: containers['rspamd-mailcow']?.state === 'running' ? '#10b981' : '#f59e0b' 
+            },
+            { 
+               label: 'ClamAV', 
+               status: containers['clamd-mailcow']?.state === 'running' ? 'Online' : 'Offline', 
+               color: containers['clamd-mailcow']?.state === 'running' ? '#10b981' : '#ef4444' 
+            },
+            { 
+               label: 'Redis Cache', 
+               status: containers['redis-mailcow']?.state === 'running' ? 'Online' : 'Warning', 
+               color: containers['redis-mailcow']?.state === 'running' ? '#10b981' : '#f59e0b' 
+            },
+        ];
+    };
+
+    const trafficData = stats?.mailTraffic || [
+        { day: 'Mon', sent: 0, received: 0 },
+        { day: 'Tue', sent: 0, received: 0 },
+        { day: 'Wed', sent: 0, received: 0 },
+        { day: 'Thu', sent: 0, received: 0 },
+        { day: 'Fri', sent: 0, received: 0 },
+        { day: 'Sat', sent: 0, received: 0 },
+        { day: 'Sun', sent: 0, received: 0 },
+    ];
+
+    let maxTraffic = 100; // minimum scale
+    trafficData.forEach((d: any) => {
+        if (d.sent > maxTraffic) maxTraffic = d.sent;
+        if (d.received > maxTraffic) maxTraffic = d.received;
+    });
+    // Add 10% padding to top
+    maxTraffic = maxTraffic * 1.1;
+
     return (
         <div style={{ animation: 'fade-in 0.5s ease-out' }}>
             <div className={styles.pageHeader}>
@@ -23,22 +124,20 @@ export default function Dashboard() {
             <div className={styles.statGrid}>
                 <StatCard
                     title="Total Mailboxes"
-                    value={mockStats.totalMailboxes}
+                    value={loading ? "..." : (stats?.totalMailboxes || 0)}
                     icon={Mail}
-                    trend={{ value: '8%', positive: true }}
                 />
                 <StatCard
-                    title="Active Users"
-                    value={mockStats.activeUsers}
+                    title="Active Admin Users"
+                    value={loading ? "..." : (stats?.activeUsers || 0)}
                     icon={Users}
-                    trend={{ value: '2%', positive: false }}
                 />
                 <StatCard
                     title="Server Storage"
-                    value="1.24 TB"
+                    value={loading ? "..." : formatBytes(stats?.storageLimitBytes)}
                     icon={Database}
-                    progress={mockStats.storageUsed}
-                    description="of 2.0 TB total capacity"
+                    progress={stats?.storageLimitBytes > 0 ? Math.round((stats.storageUsedBytes / stats.storageLimitBytes) * 100) : 0}
+                    description={`Current use: ${formatBytes(stats?.storageUsedBytes || 0)}`}
                 />
             </div>
 
@@ -53,17 +152,19 @@ export default function Dashboard() {
                     </div>
 
                     <div className={styles.chartBarsWrapper}>
-                        {mockStats.trafficData.map((data, i) => (
+                        {loading ? (
+                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', width: '100%', color: '#9ca3af' }}>Loading Traffic Data...</div>
+                        ) : trafficData.map((data: any, i: number) => (
                             <div key={i} className={styles.chartDay}>
                                 <div className={styles.barGroup}>
                                     <div
                                         className={styles.barSent}
-                                        style={{ height: `${(data.sent / 1000) * 100}%` }}
+                                        style={{ height: `${(data.sent / maxTraffic) * 100}%`, backgroundColor: '#16a34a' }}
                                         title={`Sent: ${data.sent}`}
                                     ></div>
                                     <div
                                         className={styles.barRecv}
-                                        style={{ height: `${(data.received / 1000) * 100}%` }}
+                                        style={{ height: `${(data.received / maxTraffic) * 100}%`, backgroundColor: '#60a5fa' }}
                                         title={`Received: ${data.received}`}
                                     ></div>
                                 </div>
@@ -84,19 +185,13 @@ export default function Dashboard() {
                     </div>
                 </div>
 
-                <div className={styles.card}>
-                    <h2 style={{ fontWeight: 700, color: '#111827', marginBottom: '24px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                        System Health
-                        <span style={{ width: '8px', height: '8px', backgroundColor: '#10b981', borderRadius: '100%' }}></span>
+                <div className={styles.card} style={{ minHeight: '380px' }}>
+                    <h2 style={{ fontWeight: 700, color: '#111827', marginBottom: '24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '8px' }}>
+                        <span style={{ display: 'flex', alignItems: 'center', gap: '8px'}}> System Health</span>
+                        {loading ? <Activity size={16} className="animate-spin" /> : <span style={{ width: '8px', height: '8px', backgroundColor: '#10b981', borderRadius: '100%' }}></span>}
                     </h2>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                        {[
-                            { label: 'SMTP Server', status: 'Online', color: '#10b981' },
-                            { label: 'IMAP Server', status: 'Online', color: '#10b981' },
-                            { label: 'SpamAssassin', status: 'Online', color: '#10b981' },
-                            { label: 'ClamAV', status: 'Updating', color: '#f59e0b' },
-                            { label: 'Redis Cache', status: 'Online', color: '#10b981' },
-                        ].map((service) => (
+                        {getServicesList().map((service) => (
                             <div key={service.label} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingBottom: '12px', borderBottom: '1px solid #f9fafb' }}>
                                 <span style={{ fontSize: '0.875rem', color: '#4b5563' }}>{service.label}</span>
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -118,7 +213,7 @@ export default function Dashboard() {
                     <button style={{ fontSize: '0.875rem', fontWeight: 600, color: '#16a34a' }}>View All</button>
                 </div>
                 <AdminTable headers={['Type', 'User', 'IP Address', 'Timestamp', 'Status']}>
-                    {mockLogs.map((log) => (
+                    {stats?.activityLogs ? stats.activityLogs.map((log: any) => (
                         <tr key={log.id}>
                             <td>
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
@@ -135,7 +230,7 @@ export default function Dashboard() {
                                 <StatusBadge status={log.status} />
                             </td>
                         </tr>
-                    ))}
+                    )) : <tr><td colSpan={5} style={{ textAlign: 'center', padding: '20px' }}>Loading or no activity found...</td></tr>}
                 </AdminTable>
             </div>
         </div>

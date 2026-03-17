@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from 'react';
 import {
     Activity,
     Cpu,
@@ -12,25 +13,109 @@ import {
 } from 'lucide-react';
 import styles from '../admin.module.css';
 
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
+
 export default function SystemStatusPage() {
+    const [health, setHealth] = useState<any>(null);
+    const [loading, setLoading] = useState(true);
+    const [lastRefresh, setLastRefresh] = useState(new Date().toLocaleTimeString());
+
+    const fetchHealth = async () => {
+        setLoading(true);
+        try {
+            const res = await fetch(`${API_BASE}/admin/stats/health`, {
+                credentials: 'true' === 'true' ? 'include' : 'same-origin'
+            });
+            if (res.ok) {
+                setHealth(await res.json());
+                setLastRefresh(new Date().toLocaleTimeString());
+            }
+        } catch (err) {
+            console.error("Failed to load health data:", err);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        fetchHealth();
+    }, []);
+
+    const getServiceStatus = (containerName: string) => {
+        if (!health?.containers || !health.containers[containerName]) return 'Offline';
+        return health.containers[containerName].state === 'running' ? 'Healthy' : 'Offline';
+    };
+
+    const host = health?.host || {};
+    const disk = health?.disk || {};
+    const containers = health?.containers || {};
+
+    // Processing CPU
+    const cpuUsage = host.cpu?.usage || 0;
+
+    // Processing RAM
+    const ramTotalGB = host.memory?.total ? (host.memory.total / 1073741824) : 0;
+    const ramUsagePercent = host.memory?.usage || 0;
+    const ramUsedGB = ramTotalGB * (ramUsagePercent / 100);
+
+    // Processing Disk
+    const diskUsedStr = disk.used || '0G';
+    const diskTotalStr = disk.total || '0G';
+    const diskPercent = disk.used_percent ? parseInt(disk.used_percent.replace('%', '')) : 0;
+
+    // Processing Uptime
+    const formatUptime = (seconds: number) => {
+        if (!seconds) return '---';
+        const days = Math.floor(seconds / (3600 * 24));
+        const hours = Math.floor(seconds % (3600 * 24) / 3600);
+        return `${days}d ${hours}h`;
+    };
+
     return (
         <div style={{ animation: 'fade-in 0.5s ease-out' }}>
             <div className={styles.pageHeader}>
                 <div>
                     <h1 className={styles.pageTitle}>System Status</h1>
-                    <p className={styles.pageSubtitle}>Monitor server performance and service health in real-time.</p>
+                    <p className={styles.pageSubtitle}>Monitor server performance and service health in real-time. (Last sync: {lastRefresh})</p>
                 </div>
-                <button className={`${styles.primaryButton} ${styles.badgeSuccess}`} style={{ backgroundColor: 'white', color: '#16a34a', border: '1px solid #dcfce7' }}>
-                    <RefreshCw size={18} />
-                    Refresh Stats
+                <button 
+                    onClick={fetchHealth}
+                    className={`${styles.primaryButton} ${styles.badgeSuccess}`} 
+                    style={{ backgroundColor: 'white', color: '#16a34a', border: '1px solid #dcfce7' }}>
+                    <RefreshCw size={18} className={loading ? "animate-spin" : ""} />
+                    {loading ? "Refreshing..." : "Refresh Stats"}
                 </button>
             </div>
 
             <div className={styles.statGrid}>
-                <ResourceCard title="CPU Usage" value="12%" icon={Cpu} progress={12} trend="Stable" />
-                <ResourceCard title="RAM Usage" value="4.2 GB / 8 GB" icon={Database} progress={52} trend="Increasing" />
-                <ResourceCard title="Disk Space" value="1.2 TB / 2.0 TB" icon={HardDrive} progress={60} trend="Stable" />
-                <ResourceCard title="Network Load" value="45 Mbps" icon={Network} progress={30} trend="Normal" />
+                <ResourceCard 
+                    title="CPU Usage" 
+                    value={loading ? '...' : `${cpuUsage}%`} 
+                    icon={Cpu} 
+                    progress={cpuUsage} 
+                    trend={cpuUsage > 80 ? "HIGH" : "STABLE"} 
+                />
+                <ResourceCard 
+                    title="RAM Usage" 
+                    value={loading ? '...' : `${ramUsedGB.toFixed(1)} GB / ${ramTotalGB.toFixed(1)} GB`} 
+                    icon={Database} 
+                    progress={ramUsagePercent} 
+                    trend={ramUsagePercent > 80 ? "HIGH" : "NORMAL"} 
+                />
+                <ResourceCard 
+                    title="Disk Space" 
+                    value={loading ? '...' : `${diskUsedStr} / ${diskTotalStr}`} 
+                    icon={HardDrive} 
+                    progress={diskPercent} 
+                    trend={diskPercent > 80 ? "WARNING" : "STABLE"} 
+                />
+                <ResourceCard 
+                    title="Network Load" 
+                    value={loading ? "..." : "--- Mbps"} 
+                    icon={Network} 
+                    progress={0} 
+                    trend="UNKNOWN" 
+                />
             </div>
 
             <div className={styles.dashboardRows}>
@@ -40,13 +125,13 @@ export default function SystemStatusPage() {
                         Service Health Monitor
                     </h2>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                        <ServiceRow name="Postfix (SMTP)" status="Healthy" uptime="14d 2h 45m" port="25, 465, 587" />
-                        <ServiceRow name="Dovecot (IMAP/POP3)" status="Healthy" uptime="14d 2h 45m" port="143, 993" />
-                        <ServiceRow name="Rspamd (Spam Filter)" status="Healthy" uptime="14d 2h 45m" port="11334" />
-                        <ServiceRow name="ClamAV (Antivirus)" status="Updating" uptime="2h 12m" port="---" />
-                        <ServiceRow name="Redis (Cache)" status="Healthy" uptime="45d 10h 12m" port="6379" />
-                        <ServiceRow name="MariaDB (Database)" status="Healthy" uptime="45d 10h 12m" port="3306" />
-                        <ServiceRow name="Nginx (Web Proxy)" status="Healthy" uptime="14d 2h 45m" port="80, 443" />
+                        <ServiceRow name="Postfix (SMTP)" status={getServiceStatus('postfix-mailcow')} uptime={containers['postfix-mailcow']?.started_at ? 'Running' : 'Offline'} port="25, 465, 587" />
+                        <ServiceRow name="Dovecot (IMAP/POP3)" status={getServiceStatus('dovecot-mailcow')} uptime={containers['dovecot-mailcow']?.started_at ? 'Running' : 'Offline'} port="143, 993" />
+                        <ServiceRow name="Rspamd (Spam Filter)" status={getServiceStatus('rspamd-mailcow')} uptime={containers['rspamd-mailcow']?.started_at ? 'Running' : 'Offline'} port="11334" />
+                        <ServiceRow name="ClamAV (Antivirus)" status={getServiceStatus('clamd-mailcow')} uptime={containers['clamd-mailcow']?.started_at ? 'Running' : 'Offline'} port="---" />
+                        <ServiceRow name="Redis (Cache)" status={getServiceStatus('redis-mailcow')} uptime={containers['redis-mailcow']?.started_at ? 'Running' : 'Offline'} port="6379" />
+                        <ServiceRow name="MariaDB (Database)" status={getServiceStatus('mysql-mailcow')} uptime={containers['mysql-mailcow']?.started_at ? 'Running' : 'Offline'} port="3306" />
+                        <ServiceRow name="Nginx (Web Proxy)" status={getServiceStatus('nginx-mailcow')} uptime={containers['nginx-mailcow']?.started_at ? 'Running' : 'Offline'} port="80, 443" />
                     </div>
                 </div>
 
@@ -54,20 +139,18 @@ export default function SystemStatusPage() {
                     <div className={styles.card} style={{ backgroundColor: '#111827', color: 'white', border: 'none' }}>
                         <h3 style={{ fontSize: '0.875rem', fontWeight: 700, marginBottom: '20px' }}>Uptime Statistics</h3>
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                            <UptimeStat label="Last 24 Hours" value="99.99%" color="#10b981" />
-                            <UptimeStat label="Last 7 Days" value="99.95%" color="#10b981" />
-                            <UptimeStat label="Last 30 Days" value="99.92%" color="#10b981" />
+                            <UptimeStat label="System Uptime" value={loading ? '...' : formatUptime(host.uptime)} color="#10b981" />
+                            <UptimeStat label="Platform" value={loading ? '...' : (host.architecture || '---')} color="#10b981" />
+                            <UptimeStat label="CPU Cores" value={loading ? '...' : (host.cpu?.cores || '---')} color="#10b981" />
                         </div>
                     </div>
 
                     <div className={styles.card}>
                         <h3 style={{ fontSize: '0.875rem', fontWeight: 700, color: '#111827', marginBottom: '16px' }}>Server Information</h3>
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                            <ServerInfoRow label="Hostname" value="mx1.ksamail.sa" />
-                            <ServerInfoRow label="IP Address" value="94.12.44.182" />
-                            <ServerInfoRow label="OS Version" value="Ubuntu 22.04 LTS" />
-                            <ServerInfoRow label="Mailcow" value="v2024.02" />
-                            <ServerInfoRow label="Last Reboot" style={{ marginTop: '8px' }} value="Feb 15, 2026" />
+                            <ServerInfoRow label="Timezone" value={loading ? '...' : (host.system_time || '---')} />
+                            <ServerInfoRow label="Mailcow" value="Integrated" />
+                            <ServerInfoRow label="Last API Refresh" style={{ marginTop: '8px' }} value={lastRefresh} />
                         </div>
                     </div>
                 </div>

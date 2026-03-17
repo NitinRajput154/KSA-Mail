@@ -9,7 +9,8 @@ import {
     ShieldCheck,
     Activity,
     FileText,
-    Settings
+    Settings,
+    LogOut
 } from 'lucide-react';
 import Image from 'next/image';
 import styles from '@/app/admin/admin.module.css';
@@ -21,16 +22,28 @@ const navigation = [
     { name: 'Security', href: '/admin/security', icon: ShieldCheck },
     { name: 'System Status', href: '/admin/status', icon: Activity },
     { name: 'Logs', href: '/admin/logs', icon: FileText },
-    { name: 'Settings', href: '/admin/settings', icon: Settings },
 ];
 
 export default function Sidebar() {
     const pathname = usePathname();
 
+    const handleLogout = async () => {
+        try {
+            await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000'}/auth/logout`, {
+                method: 'POST',
+                credentials: 'true' === 'true' ? 'include' : 'same-origin',
+            });
+        } catch (e) {
+            console.error('Logout failed', e);
+        }
+        localStorage.removeItem('user');
+        window.location.href = '/admin/login';
+    };
+
     return (
         <aside className={styles.sidebar}>
             <div className={styles.logoArea}>
-                <Image src="/logo.png" alt="Logo" width={32} height={32} />
+                <Image src="/green-logo.png" alt="Logo" width={100} height={32} style={{ width: 'auto', height: '32px' }} />
                 <span className={styles.logoText}>KSA Mail</span>
             </div>
             <nav className={styles.navSection}>
@@ -55,6 +68,13 @@ export default function Sidebar() {
                         <span className={styles.userName}>Admin User</span>
                         <span className={styles.userEmail}>superadmin@ksamail.sa</span>
                     </div>
+                    <button 
+                        onClick={handleLogout}
+                        style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: '#6b7280', padding: '8px', marginLeft: 'auto' }}
+                        title="Logout"
+                    >
+                        <LogOut size={20} />
+                    </button>
                 </div>
             </div>
         </aside>

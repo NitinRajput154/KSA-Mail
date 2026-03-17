@@ -3,12 +3,12 @@
 import { useState } from 'react';
 import NextLink from 'next/link';
 import Image from 'next/image';
-import { Shield, Globe, Server, Check, Eye, EyeOff, ChevronLeft, Database, Lock } from 'lucide-react';
-import styles from './login.module.css';
+import { Shield, Server, Eye, EyeOff, ChevronLeft, Lock } from 'lucide-react';
+import styles from '@/app/(website)/login/login.module.css';
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
 
-export default function Login() {
+export default function AdminLogin() {
     const [formData, setFormData] = useState({
         email: '',
         password: '',
@@ -48,15 +48,16 @@ export default function Login() {
                 throw new Error(data.message || 'Login failed');
             }
 
-            // Since we use httpOnly cookies in the backend for the token,
-            // we don't necessarily need to store it manually here if same-origin.
-            // But we can store user info in localStorage for UI state.
+            // Quick check if the returned user is an admin
+            if (data.user?.role !== 'ADMIN') {
+                throw new Error('Access Denied. You are not an administrator.');
+            }
 
             localStorage.setItem('user', JSON.stringify(data.user));
-            alert(`Welcome back, ${data.user.name}!`);
-            window.location.href = '/'; // Redirect to dashboard/home
+            alert(`Welcome back, Admin ${data.user.name}!`);
+            window.location.href = '/admin'; // Redirect to admin panel
         } catch (error: any) {
-            alert(`Login Error: ${error.message}`);
+            alert(`Admin Login Error: ${error.message}`);
         } finally {
             setLoading(false);
         }
@@ -73,28 +74,24 @@ export default function Login() {
                         </NextLink>
 
                         <h1 className={styles.infoTitle}>
-                            Welcome back to your inbox.
+                            KSA Mail Admin Portal
                         </h1>
                         <p className={styles.infoText}>
-                            Secure, professional email hosting trusted by thousands of businesses across Saudi Arabia.
+                            Restricted access for authorized personnel only. Manage infrastructure, users, and organization settings.
                         </p>
 
                         <div className={styles.benefitList}>
                             <div className={styles.benefitItem}>
                                 <div className={styles.benefitIcon}><Lock size={20} /></div>
-                                <span>256-bit Encryption</span>
+                                <span>Advanced Security Control</span>
                             </div>
                             <div className={styles.benefitItem}>
                                 <div className={styles.benefitIcon}><Server size={20} /></div>
-                                <span>Local KSA Servers</span>
+                                <span>Infrastructure Management</span>
                             </div>
                             <div className={styles.benefitItem}>
                                 <div className={styles.benefitIcon}><Shield size={20} /></div>
-                                <span>99.9% Uptime SLA</span>
-                            </div>
-                            <div className={styles.benefitItem}>
-                                <div className={styles.benefitIcon}><Globe size={20} /></div>
-                                <span>Custom Domains</span>
+                                <span>Audit & Compliance Logs</span>
                             </div>
                         </div>
                     </div>
@@ -105,23 +102,23 @@ export default function Login() {
                 <div className={styles.formSide}>
                     <NextLink href="/" className={styles.backLink}>
                         <ChevronLeft size={18} />
-                        Back to home
+                        Back to main site
                     </NextLink>
 
                     <div className={styles.formContainer}>
                         <div className={styles.formHeader}>
-                            <h2>Sign In</h2>
-                            <p>Enter your credentials to access your account</p>
+                            <h2>Admin Access</h2>
+                            <p>Enter your administrative credentials</p>
                         </div>
 
                         <form className={styles.form} onSubmit={handleSubmit}>
                             <div className={styles.inputGroup}>
-                                <label htmlFor="email">Email Address</label>
+                                <label htmlFor="email">Admin Email (or Username)</label>
                                 <input
                                     id="email"
                                     name="email"
-                                    type="email"
-                                    placeholder="you@example.com"
+                                    type="text"
+                                    placeholder="admin@ksamail.com"
                                     value={formData.email}
                                     onChange={handleChange}
                                     required
@@ -129,7 +126,7 @@ export default function Login() {
                             </div>
 
                             <div className={styles.inputGroup}>
-                                <label htmlFor="password">Password</label>
+                                <label htmlFor="password">Security Key / Password</label>
                                 <div className={styles.passwordWrapper}>
                                     <input
                                         id="password"
@@ -158,25 +155,18 @@ export default function Login() {
                                         checked={formData.rememberMe}
                                         onChange={handleChange}
                                     />
-                                    <span>Remember me</span>
+                                    <span>Remember my session</span>
                                 </label>
-                                <NextLink href="/forgot-password" className={styles.forgotPassword}>
-                                    Forgot password?
-                                </NextLink>
                             </div>
 
                             <button type="submit" className={styles.submitButton} disabled={loading}>
-                                {loading ? 'Signing In...' : 'Sign In'}
+                                {loading ? 'Logging In...' : 'Login'}
                             </button>
-
-                            <div className={styles.divider}>
-                                <span>Don't have an account? <NextLink href="/signup">Create one free</NextLink></span>
-                            </div>
                         </form>
                     </div>
 
                     <p className={styles.legalFooter}>
-                        By signing in, you agree to our <NextLink href="/terms">Terms of Service</NextLink> and <NextLink href="/privacy">Privacy Policy</NextLink>.
+                        Unauthorized access is strictly prohibited. Activity is logged.
                     </p>
                 </div>
             </div>
