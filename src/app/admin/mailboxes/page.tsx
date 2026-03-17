@@ -36,9 +36,15 @@ export default function MailboxesPage() {
     });
     const [creating, setCreating] = useState(false);
 
+    const getAuthHeaders = (): Record<string, string> => {
+        const tokenMatch = document.cookie.match(/(?:^|; )access_token=([^;]*)/);
+        return tokenMatch ? { 'Authorization': `Bearer ${tokenMatch[1]}` } : {};
+    };
+
     const fetchMailboxes = async () => {
         try {
             const response = await fetch(`${API_BASE}/mailbox/all`, {
+                headers: { ...getAuthHeaders() },
                 credentials: 'true' === 'true' ? 'include' : 'same-origin'
             });
             
@@ -73,6 +79,7 @@ export default function MailboxesPage() {
         try {
             const response = await fetch(`${API_BASE}/mailbox/${email}/${action}`, {
                 method: 'POST',
+                headers: { ...getAuthHeaders() },
                 credentials: 'true' === 'true' ? 'include' : 'same-origin'
             });
 
@@ -91,6 +98,7 @@ export default function MailboxesPage() {
         try {
             const response = await fetch(`${API_BASE}/mailbox/${email}`, {
                 method: 'DELETE',
+                headers: { ...getAuthHeaders() },
                 credentials: 'true' === 'true' ? 'include' : 'same-origin'
             });
 
@@ -113,7 +121,7 @@ export default function MailboxesPage() {
         try {
             const response = await fetch(`${API_BASE}/mailbox/${email}/reset-password`, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: { 'Content-Type': 'application/json', ...getAuthHeaders() },
                 credentials: 'true' === 'true' ? 'include' : 'same-origin',
                 body: JSON.stringify({ password: newPassword }),
             });
@@ -143,7 +151,7 @@ export default function MailboxesPage() {
         try {
             const response = await fetch(`${API_BASE}/mailbox/add`, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: { 'Content-Type': 'application/json', ...getAuthHeaders() },
                 credentials: 'true' === 'true' ? 'include' : 'same-origin',
                 body: JSON.stringify({
                     localPart: formData.localPart.toLowerCase().trim(),
