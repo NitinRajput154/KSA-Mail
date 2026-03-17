@@ -36,6 +36,8 @@ export default function Sidebar() {
         } catch (e) {
             console.error('Logout failed', e);
         }
+        
+        document.cookie = 'access_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
         localStorage.removeItem('user');
         window.location.href = '/admin/login';
     };

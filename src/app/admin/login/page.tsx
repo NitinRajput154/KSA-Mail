@@ -54,6 +54,9 @@ export default function AdminLogin() {
             }
 
             localStorage.setItem('user', JSON.stringify(data.user));
+            // Explicitly set the token on the frontend domain so NextJs middleware can process it
+            document.cookie = `access_token=${data.access_token}; path=/; max-age=3600; Secure; SameSite=Lax`;
+            
             alert(`Welcome back, Admin ${data.user.name}!`);
             window.location.href = '/admin'; // Redirect to admin panel
         } catch (error: any) {

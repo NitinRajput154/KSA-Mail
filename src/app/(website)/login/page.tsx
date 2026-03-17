@@ -53,6 +53,9 @@ export default function Login() {
             // But we can store user info in localStorage for UI state.
 
             localStorage.setItem('user', JSON.stringify(data.user));
+            // Explicitly set the token on the frontend domain so NextJs middleware can process it
+            document.cookie = `access_token=${data.access_token}; path=/; max-age=3600; Secure; SameSite=Lax`;
+
             alert(`Welcome back, ${data.user.name}!`);
             window.location.href = '/'; // Redirect to dashboard/home
         } catch (error: any) {
