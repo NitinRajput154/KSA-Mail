@@ -50,10 +50,10 @@ export default function ForgotPassword() {
                         {loading ? 'Sending...' : 'Send Reset Link'}
                     </button>
 
-                    <Link href="/login" className={styles.backLink}>
+                    <a href="http://62.171.175.79:8889/" className={styles.backLink}>
                         <ChevronLeft size={18} />
                         Back to Sign In
-                    </Link>
+                    </a>
                 </form>
             </div>
         </div>

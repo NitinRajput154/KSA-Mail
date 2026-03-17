@@ -17,7 +17,7 @@ const Header = () => {
         </Link>
 
         <nav className={styles.nav}>
-          <Link href="/login" className={styles.loginLink}>Login</Link>
+          <a href="http://62.171.175.79:8889/" className={styles.loginLink}>Login</a>
           <Link href="/signup" className={styles.signupButton}>Sign Up Free</Link>
         </nav>
       </div>

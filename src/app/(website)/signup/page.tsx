@@ -222,7 +222,7 @@ export default function Signup() {
             if (!response.ok) throw new Error(data.message || 'Signup failed');
 
             setSuccess('Account created successfully! Redirecting to login...');
-            setTimeout(() => { window.location.href = '/login'; }, 2000);
+            setTimeout(() => { window.location.href = 'http://62.171.175.79:8889/'; }, 2000);
         } catch (err: any) {
             setError(err.message);
         } finally {
@@ -528,7 +528,7 @@ export default function Signup() {
                             </div>
 
                             <p className={styles.loginPrompt}>
-                                Already have an account? <Link href="/login">Sign in</Link>
+                                Already have an account? <a href="http://62.171.175.79:8889/">Sign in</a>
                             </p>
                         </form>
 

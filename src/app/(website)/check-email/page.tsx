@@ -27,10 +27,10 @@ function CheckEmailContent() {
                     <p>We've sent a password reset link to <br /><span className={styles.emailDisplay}>{email}</span>. Please check your inbox and follow the instructions.</p>
                 </div>
 
-                <Link href="/login" className={styles.submitButton} style={{ textDecoration: 'none', textAlign: 'center' }}>
+                <a href="http://62.171.175.79:8889/" className={styles.submitButton} style={{ textDecoration: 'none', textAlign: 'center', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
                     <ChevronLeft size={18} />
                     Back to Sign In
-                </Link>
+                </a>
             </div>
         </div>
     );
