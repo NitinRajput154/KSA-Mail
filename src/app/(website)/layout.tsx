@@ -8,7 +8,7 @@ export default function WebsiteLayout({
     return (
         <>
             <Header />
-            <main style={{ paddingTop: '80px' }}>
+            <main className="main-content">
                 {children}
             </main>
         </>

@@ -157,7 +157,7 @@ export default function ForgotPassword() {
                             <button type="submit" className={styles.submitButton} disabled={loading}>
                                 {loading ? 'Sending...' : 'Send OTP'}
                             </button>
-                            <Link href="/login" className={styles.backLink}>
+                            <Link href="https://webmail.ksamail.com/" className={styles.backLink}>
                                 <ChevronLeft size={18} /> Back to Sign In
                             </Link>
                         </form>

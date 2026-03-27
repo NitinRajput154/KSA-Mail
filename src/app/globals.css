@@ -88,3 +88,13 @@ p {
     padding: 0 1.25rem;
   }
 }
+
+.main-content {
+  padding-top: 100px;
+}
+
+@media (max-width: 768px) {
+  .main-content {
+    padding-top: 80px;
+  }
+}

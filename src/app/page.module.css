@@ -848,10 +848,20 @@
 
   .featureIcon {
     margin: 0 auto;
+    width: 80px;
+    height: 80px;
   }
 
   .featureCheck {
     justify-content: center;
+  }
+
+  .featureInfo h3 {
+    font-size: 1.5rem;
+  }
+
+  .featureInfo p {
+    font-size: 1rem;
   }
 
   .adsGrid {
@@ -881,15 +891,73 @@
     font-size: 1.1rem;
   }
 
+  .heroActions {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .primaryButton,
+  .outlineButton {
+    width: 100%;
+    justify-content: center;
+    text-align: center;
+  }
+
   .heroFooter {
     flex-direction: column;
     gap: 0.5rem;
   }
 
+  .heroCards {
+    display: none;
+  }
+
   .reliabilityGrid {
     grid-template-columns: 1fr;
   }
+
+  .features {
+    margin-top: -4rem;
+    padding: 6rem 0 4rem;
+  }
+
+  .reliability {
+    margin-top: -4rem;
+    padding: 6rem 0 4rem;
+  }
+
+  .sectionHeader {
+    margin: 0 auto 3rem;
+  }
+
+  .sponsorAds {
+    padding: 3rem 0 4rem;
+  }
+
+  .cta {
+    margin-top: 4rem;
+    padding: 0 0 4rem;
+  }
+
+  .ctaBox {
+    padding: 4rem 2rem;
+    border-radius: 2rem;
+  }
+
+  .ctaBox h2 {
+    font-size: 2rem;
+  }
+
+  .ctaBox p {
+    font-size: 1.05rem;
+  }
+
+  .footerGrid {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
 }
+
 
 /* ═════════════════════════════════════════════════
    SCROLLING ADS STRIP
@@ -1032,5 +1100,44 @@
   .adStripHeader h3::before,
   .adStripHeader h3::after {
     width: 30px;
+  }
+
+  .heroSlide {
+    padding-top: 100px;
+    padding-bottom: 60px;
+  }
+
+  .companyGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .statsHorizontal {
+    grid-template-columns: 1fr;
+  }
+
+  .ctaBox {
+    padding: 3rem 1.5rem;
+  }
+
+  .ctaBox h2 {
+    font-size: 2rem;
+  }
+
+  .footerGrid {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+    text-align: center;
+  }
+
+  .footerColumn {
+    align-items: center;
+  }
+
+  .footerSocials {
+    justify-content: center;
+  }
+
+  .footerLogoRow {
+    justify-content: center;
   }
 }

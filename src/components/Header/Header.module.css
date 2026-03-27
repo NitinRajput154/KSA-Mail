@@ -62,3 +62,42 @@
 .signupButton:active {
     transform: scale(0.98);
 }
+
+@media (max-width: 768px) {
+    .header {
+        height: 80px;
+    }
+    .logo {
+        font-size: 1rem;
+    }
+    .logoImage {
+        width: 100px;
+        height: auto;
+    }
+    .nav {
+        gap: 1rem;
+    }
+    .signupButton {
+        padding: 0.5rem 1rem;
+        font-size: 0.875rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .nav {
+        gap: 0.5rem;
+    }
+    .loginLink {
+        font-size: 0.8rem;
+    }
+    .signupButton {
+        padding: 0.4rem 0.75rem;
+        font-size: 0.75rem;
+    }
+    .logo {
+        gap: 0.25rem;
+    }
+    .logoImage {
+        width: 80px;
+    }
+}

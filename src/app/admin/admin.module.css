@@ -462,3 +462,82 @@
     background-color: #f3f4f6;
     color: #111827;
 }
+
+@media (max-width: 1024px) {
+    .dashboardRows {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 768px) {
+    .sidebar {
+        width: 72px;
+    }
+    
+    .logoText {
+        display: none;
+    }
+    
+    .logoArea {
+        padding: 0 8px;
+        justify-content: center;
+    }
+
+    .navSection {
+        padding: 24px 8px;
+    }
+    
+    .navLink {
+        padding: 10px;
+        justify-content: center;
+        font-size: 0;
+    }
+
+    .navLinkIcon {
+        margin: 0;
+    }
+
+    .sidebarFooter {
+        padding: 16px 8px;
+    }
+
+    .userInfo, .sidebarFooter button {
+        display: none;
+    }
+
+    .userProfile {
+        justify-content: center;
+    }
+
+    .userAvatar {
+        margin: 0;
+    }
+
+    .navbar {
+        padding: 0 16px;
+    }
+
+    .pageContent {
+        padding: 16px;
+    }
+}
+
+@media (max-width: 640px) {
+    .statGrid {
+        grid-template-columns: 1fr;
+    }
+    
+    .tableWrapper {
+        overflow-x: auto;
+    }
+    
+    .pageHeader {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 16px;
+    }
+    
+    .searchBar {
+        max-width: 100%;
+    }
+}

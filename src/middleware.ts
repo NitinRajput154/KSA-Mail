@@ -28,6 +28,11 @@ export function middleware(request: NextRequest) {
     const requestHeaders = new Headers(request.headers);
     requestHeaders.set('x-pathname', request.nextUrl.pathname);
     
+    // Redirect /login to external webmail
+    if (request.nextUrl.pathname === '/login') {
+        return NextResponse.redirect('https://webmail.ksamail.com/', 308);
+    }
+
     // For admin routes
     if (request.nextUrl.pathname.startsWith('/admin')) {
         // Allow access to /admin/login
