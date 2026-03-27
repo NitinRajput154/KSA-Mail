@@ -6,7 +6,7 @@ import Image from 'next/image';
 import { Shield, Globe, Server, Check, Eye, EyeOff, ChevronLeft } from 'lucide-react';
 import styles from './signup.module.css';
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
+const API_BASE = process.env.NODE_ENV === 'production' ? process.env.NEXT_PUBLIC_API_URL : (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000');
 
 export default function Signup() {
     // ─── Form State ──────────────────────────────────────────
@@ -222,7 +222,7 @@ export default function Signup() {
             if (!response.ok) throw new Error(data.message || 'Signup failed');
 
             setSuccess('Account created successfully! Redirecting to login...');
-            setTimeout(() => { window.location.href = 'http://62.171.175.79:8889/'; }, 2000);
+            setTimeout(() => { window.location.href = 'https://webmail.ksamail.com/'; }, 2000);
         } catch (err: any) {
             setError(err.message);
         } finally {
@@ -528,7 +528,7 @@ export default function Signup() {
                             </div>
 
                             <p className={styles.loginPrompt}>
-                                Already have an account? <a href="http://62.171.175.79:8889/">Sign in</a>
+                                Already have an account? <a href="https://webmail.ksamail.com/">Sign in</a>
                             </p>
                         </form>
 

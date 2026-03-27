@@ -6,7 +6,7 @@ import Image from 'next/image';
 import { ChevronLeft, Check, Eye, EyeOff } from 'lucide-react';
 import styles from './forgot-password.module.css';
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
+const API_BASE = process.env.NODE_ENV === 'production' ? process.env.NEXT_PUBLIC_API_URL : (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000');
 
 type Step = 'INITIATE' | 'VERIFY_OTP' | 'RESET_PASSWORD' | 'SUCCESS';
 
@@ -255,7 +255,7 @@ export default function ForgotPassword() {
                             <h2>Password Reset!</h2>
                             <p>Your password has been successfully updated. You can now use your new password to sign in.</p>
                         </div>
-                        <Link href="http://62.171.175.79:8889/" className={styles.submitButton} style={{ textDecoration: 'none', display: 'inline-block' }}>
+                        <Link href="https://webmail.ksamail.com/" className={styles.submitButton} style={{ textDecoration: 'none', display: 'inline-block' }}>
                             Go to Sign In
                         </Link>
                     </>

@@ -29,7 +29,7 @@ export default function Sidebar() {
 
     const handleLogout = async () => {
         try {
-            await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000'}/auth/logout`, {
+            await fetch(`${process.env.NODE_ENV === 'production' ? process.env.NEXT_PUBLIC_API_URL : (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000')}/auth/logout`, {
                 method: 'POST',
                 credentials: 'true' === 'true' ? 'include' : 'same-origin',
             });

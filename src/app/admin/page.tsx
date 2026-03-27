@@ -14,7 +14,7 @@ import StatusBadge from '@/components/admin/StatusBadge';
 import { mockLogs } from '@/lib/mockData';
 import styles from './admin.module.css';
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
+const API_BASE = process.env.NODE_ENV === 'production' ? process.env.NEXT_PUBLIC_API_URL : (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000');
 
 export default function Dashboard() {
     const [stats, setStats] = useState<any>(null);

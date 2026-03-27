@@ -6,7 +6,7 @@ import Image from 'next/image';
 import { Shield, Server, Eye, EyeOff, ChevronLeft, Lock } from 'lucide-react';
 import styles from '@/app/(website)/login/login.module.css';
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
+const API_BASE = process.env.NODE_ENV === 'production' ? process.env.NEXT_PUBLIC_API_URL : (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000');
 
 export default function AdminLogin() {
     const [formData, setFormData] = useState({
