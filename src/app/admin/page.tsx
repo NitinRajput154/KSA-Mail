@@ -24,8 +24,15 @@ export default function Dashboard() {
     useEffect(() => {
         const fetchDashboardData = async () => {
             const tokenMatch = document.cookie.match(/(?:^|; )access_token=([^;]*)/);
-            const token = tokenMatch ? tokenMatch[1] : '';
-            const headers = { 'Authorization': `Bearer ${token}` };
+            let token = tokenMatch ? tokenMatch[1] : '';
+            if (!token && typeof window !== 'undefined') {
+                token = localStorage.getItem('access_token') || '';
+            }
+            
+            const headers: Record<string, string> = {};
+            if (token) {
+                headers['Authorization'] = `Bearer ${token}`;
+            }
 
             try {
                 // Fetch Overview Stats

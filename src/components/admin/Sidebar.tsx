@@ -10,7 +10,8 @@ import {
     Activity,
     FileText,
     Settings,
-    LogOut
+    LogOut,
+    ImageIcon
 } from 'lucide-react';
 import Image from 'next/image';
 import styles from '@/app/admin/admin.module.css';
@@ -18,6 +19,7 @@ import styles from '@/app/admin/admin.module.css';
 const navigation = [
     { name: 'Dashboard', href: '/admin', icon: LayoutDashboard },
     { name: 'Mailboxes', href: '/admin/mailboxes', icon: Mail },
+    { name: 'Banners', href: '/admin/banners', icon: ImageIcon },
     { name: 'Users', href: '/admin/users', icon: Users },
     { name: 'Security', href: '/admin/security', icon: ShieldCheck },
     { name: 'System Status', href: '/admin/status', icon: Activity },
@@ -39,6 +41,7 @@ export default function Sidebar() {
         
         document.cookie = 'access_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
         localStorage.removeItem('user');
+        localStorage.removeItem('access_token');
         window.location.href = '/admin/login';
     };
 

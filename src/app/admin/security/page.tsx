@@ -19,8 +19,14 @@ export default function SecuritySettingsPage() {
     const [loading, setLoading] = useState(true);
 
     const getAuthHeaders = (): Record<string, string> => {
+        let token = '';
         const tokenMatch = document.cookie.match(/(?:^|; )access_token=([^;]*)/);
-        return tokenMatch ? { 'Authorization': `Bearer ${tokenMatch[1]}` } : {};
+        if (tokenMatch) {
+            token = tokenMatch[1];
+        } else if (typeof window !== 'undefined') {
+            token = localStorage.getItem('access_token') || '';
+        }
+        return token ? { 'Authorization': `Bearer ${token}` } : {};
     };
 
     const fetchSecurityData = async () => {

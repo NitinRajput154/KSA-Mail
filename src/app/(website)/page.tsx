@@ -6,6 +6,8 @@ import Link from 'next/link';
 import { Shield, Headphones, Database, BarChart3, Globe, Users, ChevronLeft, ChevronRight } from 'lucide-react';
 import styles from '../page.module.css';
 
+const API_BASE = process.env.NODE_ENV === 'production' ? process.env.NEXT_PUBLIC_API_URL : (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000');
+
 // ─── Banner Data (replace with API integration) ──────
 const BANNERS = [
   {
@@ -100,10 +102,30 @@ const STRIP_ADS = [
 ];
 
 export default function Home() {
-  // ─── Banner Slider State ──────────────────────────────────
+  // ─── Banner State ─────────────────────────────────────────
+  const [banners, setBanners] = useState<any[]>(BANNERS);
   const [currentBanner, setCurrentBanner] = useState(0);
   const [isAutoPlaying, setIsAutoPlaying] = useState(true);
   const [slideDirection, setSlideDirection] = useState<'left' | 'right'>('right');
+
+  // Fetch Banners from API
+  useEffect(() => {
+    const fetchBanners = async () => {
+      try {
+        const res = await fetch(`${API_BASE}/banners/active`);
+        if (res.ok) {
+          const data = await res.json();
+          if (data && data.length > 0) {
+            setBanners(data);
+          }
+        }
+      } catch (err) {
+        console.error("Failed to load dynamic banners:", err);
+        // Fallback to static BANNERS is already set in state
+      }
+    };
+    fetchBanners();
+  }, []);
 
   const goToSlide = useCallback((index: number) => {
     setSlideDirection(index > currentBanner ? 'right' : 'left');
@@ -112,22 +134,30 @@ export default function Home() {
 
   const goNext = useCallback(() => {
     setSlideDirection('right');
-    setCurrentBanner(prev => (prev + 1) % BANNERS.length);
-  }, []);
+    setCurrentBanner(prev => (prev + 1) % banners.length);
+  }, [banners.length]);
 
   const goPrev = useCallback(() => {
     setSlideDirection('left');
-    setCurrentBanner(prev => (prev - 1 + BANNERS.length) % BANNERS.length);
-  }, []);
+    setCurrentBanner(prev => (prev - 1 + banners.length) % banners.length);
+  }, [banners.length]);
 
   // Auto-play
   useEffect(() => {
     if (!isAutoPlaying) return;
-    const timer = setInterval(goNext, 5000);
+    const timer = setInterval(goNext, 3000);
     return () => clearInterval(timer);
   }, [isAutoPlaying, goNext]);
 
-  const banner = BANNERS[currentBanner];
+  const banner = banners[currentBanner];
+
+  const getImageUrl = (url: string) => {
+    if (!url) return '';
+    if (url.startsWith('http')) return url;
+    const base = API_BASE || 'http://localhost:4000';
+    if (url.startsWith('/uploads/')) return `${base.replace('/api', '')}${url}`;
+    return url;
+  };
 
   return (
     <div className={styles.landing}>
@@ -144,15 +174,15 @@ export default function Home() {
             className={styles.heroTrack}
             style={{ transform: `translateX(-${currentBanner * 100}%)` }}
           >
-            {BANNERS.map((banner, index) => (
+            {banners.map((banner, index) => (
               <div
                 key={banner.id}
                 className={`${styles.heroSlide} ${index === currentBanner ? styles.heroSlideActive : ''}`}
-                style={{ backgroundImage: `url(${banner.image})` }}
+                style={{ backgroundImage: `url(${getImageUrl(banner.image)})` }}
               >
                 <div
                   className={styles.heroSlideOverlay}
-                  style={{ background: banner.bgColor }}
+                  style={{ background: 'none' }}
                 ></div>
 
                 <div className={`container ${styles.heroContainer}`}>
@@ -168,14 +198,14 @@ export default function Home() {
                         Log In
                       </a>
                     </div>
-                    <div className={styles.heroFooter}>
+                    {/* <div className={styles.heroFooter}>
                       <span>✓ No setup fees</span>
                       <span>✓ 99.9% uptime SLA</span>
                       <span>✓ Saudi-hosted servers</span>
-                    </div>
+                    </div> */}
                   </div>
 
-                  <div className={styles.heroCards}>
+                  {/* <div className={styles.heroCards}>
                     <div className={styles.glassCard}>
                       <p className={styles.cardInfo}>TRUSTED BY LEADING COMPANIES</p>
                       <div className={styles.companyGrid}>
@@ -196,9 +226,9 @@ export default function Home() {
                           <span className={styles.companyName}>CloudBase</span>
                         </div>
                       </div>
-                    </div>
+                    </div> */}
 
-                    <div className={styles.statsHorizontal}>
+                  {/* <div className={styles.statsHorizontal}>
                       <div className={styles.statGlass}>
                         <div className={styles.statValue}>50K+</div>
                         <div className={styles.statLabel}>Active Users</div>
@@ -211,8 +241,8 @@ export default function Home() {
                         <div className={styles.statValue}>24/7</div>
                         <div className={styles.statLabel}>Support</div>
                       </div>
-                    </div>
-                  </div>
+                    </div> */}
+                  {/* </div> */}
                 </div>
               </div>
             ))}
@@ -237,7 +267,7 @@ export default function Home() {
 
         {/* Dots */}
         <div className={styles.sliderDots}>
-          {BANNERS.map((_, index) => (
+          {banners.map((_, index) => (
             <button
               key={index}
               className={`${styles.sliderDot} ${index === currentBanner ? styles.sliderDotActive : ''}`}
