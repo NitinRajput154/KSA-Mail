@@ -20,6 +20,8 @@ const navigation = [
     { name: 'Dashboard', href: '/admin', icon: LayoutDashboard },
     { name: 'Mailboxes', href: '/admin/mailboxes', icon: Mail },
     { name: 'Banners', href: '/admin/banners', icon: ImageIcon },
+    { name: 'Sponsors', href: '/admin/sponsors', icon: Activity },
+    { name: 'Support', href: '/admin/support', icon: FileText },
     { name: 'Users', href: '/admin/users', icon: Users },
     { name: 'Security', href: '/admin/security', icon: ShieldCheck },
     { name: 'System Status', href: '/admin/status', icon: Activity },

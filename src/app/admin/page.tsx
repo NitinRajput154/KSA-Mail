@@ -62,10 +62,13 @@ export default function Dashboard() {
         fetchDashboardData();
     }, []);
 
-    // Helper functions for parsing
-    const formatBytes = (bytes: number) => {
-        if (!bytes) return "0.00 GB";
-        return (bytes / (1024 * 1024 * 1024)).toFixed(2) + " GB"; // converting bytes to GB
+    const formatStorageBytes = (bytes: number) => {
+        if (!bytes || bytes === 0) return '0 B';
+        const k = 1024;
+        const magnitudes = ['B', 'KB', 'MB', 'GB', 'TB'];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        const val = bytes / Math.pow(k, i);
+        return (val < 0.1 ? val.toFixed(3) : val.toFixed(2)).replace(/\.00$/, '') + ' ' + magnitudes[i];
     };
 
     const getServicesList = () => {
@@ -147,10 +150,10 @@ export default function Dashboard() {
                 />
                 <StatCard
                     title="Server Storage"
-                    value={loading ? "..." : formatBytes(stats?.storageLimitBytes)}
+                    value={loading ? "..." : formatStorageBytes(stats?.storageLimitBytes)}
                     icon={Database}
-                    progress={stats?.storageLimitBytes > 0 ? Math.round((stats.storageUsedBytes / stats.storageLimitBytes) * 100) : 0}
-                    description={`Current use: ${formatBytes(stats?.storageUsedBytes || 0)}`}
+                    progress={stats?.storageLimitBytes > 0 ? parseFloat(((stats.storageUsedBytes / stats.storageLimitBytes) * 100).toFixed(2)) : 0}
+                    description={`Current use: ${formatStorageBytes(stats?.storageUsedBytes || 0)}`}
                 />
             </div>
 

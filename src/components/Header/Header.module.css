@@ -15,6 +15,7 @@
     justify-content: space-between;
     align-items: center;
     width: 100%;
+    gap: 2rem;
 }
 
 .logo {
@@ -24,6 +25,7 @@
     font-weight: 700;
     font-size: 1.25rem;
     color: var(--primary-green);
+    margin-left: 10px;
 }
 
 .logoImage {
@@ -67,16 +69,20 @@
     .header {
         height: 80px;
     }
+
     .logo {
         font-size: 1rem;
     }
+
     .logoImage {
         width: 100px;
         height: auto;
     }
+
     .nav {
         gap: 1rem;
     }
+
     .signupButton {
         padding: 0.5rem 1rem;
         font-size: 0.875rem;
@@ -87,16 +93,20 @@
     .nav {
         gap: 0.5rem;
     }
+
     .loginLink {
         font-size: 0.8rem;
     }
+
     .signupButton {
         padding: 0.4rem 0.75rem;
         font-size: 0.75rem;
     }
+
     .logo {
         gap: 0.25rem;
     }
+
     .logoImage {
         width: 80px;
     }

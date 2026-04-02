@@ -273,24 +273,41 @@ export default function MailboxesPage() {
                         <td colSpan={7} style={{ textAlign: 'center', padding: '16px' }}>No mailboxes found matching your filters.</td>
                     </tr>
                 ) : filteredMailboxes.map((mailbox: any) => {
-                    // Normalize mailcow properties
+                    // Helpers
+                    const formatBytes = (bytes: number) => {
+                        if (!bytes || bytes === 0) return '0 B';
+                        const k = 1024;
+                        const sizes = ['B', 'KB', 'MB', 'GB', 'TB'];
+                        const i = Math.floor(Math.log(bytes) / Math.log(k));
+                        const val = bytes / Math.pow(k, i);
+                        return (val < 0.1 ? val.toFixed(3) : val.toFixed(2)).replace(/\.00$/, '') + ' ' + sizes[i];
+                    };
+
+                    const formatLastAccess = (ts: any) => {
+                        if (!ts || ts === '0' || ts === 0) return 'Never';
+                        const ms = String(ts).length <= 10 ? Number(ts) * 1000 : Number(ts);
+                        return new Date(ms).toLocaleString('en-US', {
+                            year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'
+                        });
+                    };
+
+                    // Normalize properties
                     const email = mailbox.username || mailbox.email || 'unknown';
                     const domain = mailbox.domain || email.split('@')[1] || 'unknown';
                     const quotaValue = Number(mailbox.quota) || 0;
-                    const usedValue = Number(mailbox.quota_used || mailbox.percent_used || 0);
+                    const usedValue = Number(mailbox.quota_used || 0);
                     const status = mailbox.active === 1 || mailbox.active === true ? 'active' : 'suspended';
-                    const lastLogin = mailbox.last_login || mailbox.last_imap_login || 'Never';
+                    const lastLogin = formatLastAccess(mailbox.last_login || mailbox.last_imap_login);
                     
-                    // Attempt to calculate percentage for progress bar
-                    let percent = 0;
-                    if (mailbox.percent_used) {
-                        percent = Number(mailbox.percent_used);
-                    } else if (quotaValue > 0) {
+                    let percent = Number(mailbox.percent_used) || 0;
+                    if (!percent && quotaValue > 0) {
                         percent = (usedValue / quotaValue) * 100;
                     }
 
-                    const quotaStr = quotaValue > 0 ? `${(quotaValue / 1024 / 1024).toFixed(0)} MB` : 'Unlimited'; 
-                    const usedStr = usedValue > 0 ? `${(usedValue / 1024 / 1024 / 1024).toFixed(2)} GB` : '0 MB'; // Adjusted assuming bytes
+                    const quotaStr = quotaValue > 0 ? formatBytes(quotaValue) : 'Unlimited'; 
+                    const usedStr = formatBytes(usedValue);
+                    
+                    const displayPercent = percent > 0 && percent < 0.1 ? percent.toFixed(3) : percent.toFixed(1);
 
                     return (
                         <tr key={email}>
@@ -309,21 +326,21 @@ export default function MailboxesPage() {
                             <td>
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.75rem', fontWeight: 600, color: '#111827', backgroundColor: '#f9fafb', padding: '4px 8px', borderRadius: '4px', border: '1px solid #f3f4f6', width: 'fit-content' }}>
                                     <HardDrive size={12} style={{ color: '#9ca3af' }} />
-                                    {mailbox.quota ? mailbox.quota + ' Quota' : quotaStr} 
+                                    {quotaStr}
                                 </div>
                             </td>
                             <td>
                                 <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', width: '128px' }}>
-                                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                                        <span style={{ fontSize: '0.625rem', fontWeight: 700, color: '#9ca3af', textTransform: 'uppercase' }}>Usage</span>
-                                        <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#111827' }}>{percent.toFixed(1)}%</span>
+                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
+                                        <span style={{ fontSize: '0.625rem', fontWeight: 700, color: '#9ca3af', textTransform: 'uppercase' }}>{usedStr} Used</span>
+                                        <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#111827' }}>{displayPercent}%</span>
                                     </div>
                                     <div className={styles.progressBar} style={{ height: '6px' }}>
                                         <div
                                             className={styles.progressFill}
                                             style={{
                                                 width: `${Math.min(percent, 100)}%`,
-                                                backgroundColor: status === 'suspended' ? '#9ca3af' : '#22c55e'
+                                                backgroundColor: status === 'suspended' ? '#9ca3af' : (percent > 90 ? '#ef4444' : '#22c55e')
                                             }}
                                         ></div>
                                     </div>
