@@ -30,7 +30,8 @@ export function middleware(request: NextRequest) {
     
     // Redirect /login to external webmail
     if (request.nextUrl.pathname === '/login') {
-        return NextResponse.redirect('https://webmail.ksamail.com/', 308);
+        const webmailUrl = process.env.NEXT_PUBLIC_WEBMAIL_URL || 'https://webmail.ksamail.com/';
+        return NextResponse.redirect(webmailUrl, 308);
     }
 
     // For admin routes

@@ -17,7 +17,7 @@ const Header = () => {
         </Link>
 
         <nav className={styles.nav}>
-          <a href="https://webmail.ksamail.com/" className={styles.loginLink}>Login</a>
+          <a href={process.env.NEXT_PUBLIC_WEBMAIL_URL || "https://webmail.ksamail.com/"} className={styles.loginLink}>Login</a>
           <Link href="/signup" className={styles.signupButton}>Sign Up Free</Link>
         </nav>
       </div>

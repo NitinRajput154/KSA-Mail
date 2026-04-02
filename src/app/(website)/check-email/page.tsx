@@ -27,7 +27,7 @@ function CheckEmailContent() {
                     <p>We've sent a password reset link to <br /><span className={styles.emailDisplay}>{email}</span>. Please check your inbox and follow the instructions.</p>
                 </div>
 
-                <a href="https://webmail.ksamail.com/" className={styles.submitButton} style={{ textDecoration: 'none', textAlign: 'center', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
+                <a href={process.env.NEXT_PUBLIC_WEBMAIL_URL || "https://webmail.ksamail.com/"} className={styles.submitButton} style={{ textDecoration: 'none', textAlign: 'center', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
                     <ChevronLeft size={18} />
                     Back to Sign In
                 </a>

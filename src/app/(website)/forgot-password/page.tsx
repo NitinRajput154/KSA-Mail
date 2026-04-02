@@ -157,7 +157,7 @@ export default function ForgotPassword() {
                             <button type="submit" className={styles.submitButton} disabled={loading}>
                                 {loading ? 'Sending...' : 'Send OTP'}
                             </button>
-                            <Link href="https://webmail.ksamail.com/" className={styles.backLink}>
+                            <Link href={process.env.NEXT_PUBLIC_WEBMAIL_URL || "https://webmail.ksamail.com/"} className={styles.backLink}>
                                 <ChevronLeft size={18} /> Back to Sign In
                             </Link>
                         </form>
@@ -255,7 +255,7 @@ export default function ForgotPassword() {
                             <h2>Password Reset!</h2>
                             <p>Your password has been successfully updated. You can now use your new password to sign in.</p>
                         </div>
-                        <Link href="https://webmail.ksamail.com/" className={styles.submitButton} style={{ textDecoration: 'none', display: 'inline-block' }}>
+                        <Link href={process.env.NEXT_PUBLIC_WEBMAIL_URL || "https://webmail.ksamail.com/"} className={styles.submitButton} style={{ textDecoration: 'none', display: 'inline-block' }}>
                             Go to Sign In
                         </Link>
                     </>

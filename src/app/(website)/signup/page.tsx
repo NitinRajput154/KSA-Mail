@@ -222,7 +222,8 @@ export default function Signup() {
             if (!response.ok) throw new Error(data.message || 'Signup failed');
 
             setSuccess('Account created successfully! Redirecting to login...');
-            setTimeout(() => { window.location.href = 'https://webmail.ksamail.com/'; }, 2000);
+            const webmailUrl = process.env.NEXT_PUBLIC_WEBMAIL_URL || 'https://webmail.ksamail.com/';
+            setTimeout(() => { window.location.href = webmailUrl; }, 2000);
         } catch (err: any) {
             setError(err.message);
         } finally {
@@ -528,7 +529,7 @@ export default function Signup() {
                             </div>
 
                             <p className={styles.loginPrompt}>
-                                Already have an account? <a href="https://webmail.ksamail.com/">Sign in</a>
+                                Already have an account? <a href={process.env.NEXT_PUBLIC_WEBMAIL_URL || "https://webmail.ksamail.com/"}>Sign in</a>
                             </p>
                         </form>
 

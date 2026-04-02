@@ -194,7 +194,7 @@ export default function Home() {
                       <Link href={banner.buttonLink} className={styles.primaryButton}>
                         {banner.buttonText} <span className={styles.arrow}>→</span>
                       </Link>
-                      <a href="https://webmail.ksamail.com/" className={styles.outlineButton}>
+                      <a href={process.env.NEXT_PUBLIC_WEBMAIL_URL || "https://webmail.ksamail.com/"} className={styles.outlineButton}>
                         Log In
                       </a>
                     </div>
@@ -475,7 +475,7 @@ export default function Home() {
             <div className={styles.footerColumn}>
               <h4 className={styles.footerColumnTitle}>Quick Links</h4>
               <Link href="/signup" className={styles.footerLink}>Create Account</Link>
-              <a href="https://webmail.ksamail.com/" className={styles.footerLink}>Sign In</a>
+              <a href={process.env.NEXT_PUBLIC_WEBMAIL_URL || "https://webmail.ksamail.com/"} className={styles.footerLink}>Sign In</a>
               <Link href="#" className={styles.footerLink}>Privacy Policy</Link>
               <Link href="#" className={styles.footerLink}>Terms of Service</Link>
             </div>
