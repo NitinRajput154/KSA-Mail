@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { Shield, Headphones, Database, BarChart3, Globe, Users, ChevronLeft, ChevronRight } from 'lucide-react';
 import styles from '../page.module.css';
 
-const API_BASE = process.env.NODE_ENV === 'production' ? process.env.NEXT_PUBLIC_API_URL : (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000');
+const API_BASE = process.env.NODE_ENV === 'production' ? process.env.NEXT_PUBLIC_API_URL : (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/api');
 
 // ─── Banner Data (replace with API integration) ──────
 const BANNERS = [

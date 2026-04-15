@@ -36,6 +36,13 @@ export default function MailboxesPage() {
     });
     const [creating, setCreating] = useState(false);
 
+    // Quota Update Modal State
+    const [isQuotaModalOpen, setIsQuotaModalOpen] = useState(false);
+    const [quotaModalEmail, setQuotaModalEmail] = useState('');
+    const [quotaInput, setQuotaInput] = useState('');
+    const [quotaUnit, setQuotaUnit] = useState('MB');
+    const [updatingQuota, setUpdatingQuota] = useState(false);
+
     const getAuthHeaders = (): Record<string, string> => {
         let token = '';
         const tokenMatch = document.cookie.match(/(?:^|; )access_token=([^;]*)/);
@@ -53,13 +60,13 @@ export default function MailboxesPage() {
                 headers: { ...getAuthHeaders() },
                 credentials: 'true' === 'true' ? 'include' : 'same-origin'
             });
-            
+
             if (!response.ok) {
                 throw new Error('Failed to fetch mailboxes');
             }
-            
+
             const data = await response.json();
-            
+
             if (Array.isArray(data)) {
                 setMailboxes(data);
             } else if (data && typeof data === 'object') {
@@ -90,7 +97,7 @@ export default function MailboxesPage() {
             });
 
             if (!response.ok) throw new Error(`Failed to ${action} mailbox`);
-            
+
             toast.success(`Mailbox successfully ${action}ed!`);
             setMailboxes(prev => prev.map(m => (m.username === email || m.email === email) ? { ...m, active: isActive ? 0 : 1 } : m));
         } catch (error: any) {
@@ -109,7 +116,7 @@ export default function MailboxesPage() {
             });
 
             if (!response.ok) throw new Error('Failed to delete mailbox');
-            
+
             toast.success(`Mailbox ${email} physically deleted.`);
             setMailboxes(prev => prev.filter(m => m.username !== email && m.email !== email));
         } catch (error: any) {
@@ -133,16 +140,85 @@ export default function MailboxesPage() {
             });
 
             if (!response.ok) throw new Error('Failed to reset password');
-            
+
             toast.success(`Security key for ${email} has been updated successfully.`);
         } catch (error: any) {
             toast.error(error.message);
         }
     };
 
+    const openQuotaModal = (email: string, quotaValue: number) => {
+        setQuotaModalEmail(email);
+        // quotaValue is provided in bytes by Mailcow.
+        // We convert it to MB (1024 * 1024)
+        const currentQuotaMB = Math.round(quotaValue / (1024 * 1024));
+        
+        if (currentQuotaMB >= 1024 && currentQuotaMB % 1024 === 0) {
+            setQuotaInput((currentQuotaMB / 1024).toString());
+            setQuotaUnit('GB');
+        } else {
+            setQuotaInput(currentQuotaMB.toString());
+            setQuotaUnit('MB');
+        }
+        setIsQuotaModalOpen(true);
+    };
+
+    const handleUnitChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        const newUnit = e.target.value;
+        if (newUnit === quotaUnit) return;
+        
+        let num = Number(quotaInput);
+        if (!isNaN(num)) {
+            if (newUnit === 'GB' && quotaUnit === 'MB') {
+                setQuotaInput((num / 1024).toString());
+            } else if (newUnit === 'MB' && quotaUnit === 'GB') {
+                setQuotaInput((num * 1024).toString());
+            }
+        }
+        setQuotaUnit(newUnit);
+    };
+
+    const handleUpdateQuotaSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+
+        let quotaNum = Number(quotaInput);
+        if (isNaN(quotaNum) || quotaNum <= 0) {
+            toast.error("Please enter a valid positive number for quota.");
+            return;
+        }
+
+        // Mailcow expects quota in MB (MiB)
+        if (quotaUnit === 'GB') {
+            quotaNum = quotaNum * 1024;
+        }
+
+        setUpdatingQuota(true);
+        try {
+            const response = await fetch(`${API_BASE}/mailbox/${quotaModalEmail}/update-quota`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', ...getAuthHeaders() },
+                credentials: 'include',
+                body: JSON.stringify({ quota: quotaNum }),
+            });
+
+            if (!response.ok) {
+                const errData = await response.json().catch(() => null);
+                throw new Error(errData?.message || 'Failed to update quota');
+            }
+
+            toast.success(`Storage quota for ${quotaModalEmail} updated successfully!`);
+            setIsQuotaModalOpen(false);
+            fetchMailboxes();
+        } catch (error: any) {
+            toast.error(error.message);
+        } finally {
+            setUpdatingQuota(false);
+        }
+    };
+
     const handleCreateMailbox = async (e: React.FormEvent) => {
         e.preventDefault();
-        
+
         if (!formData.localPart || !formData.domain || !formData.password) {
             toast.error("Please fill in all required fields.");
             return;
@@ -206,13 +282,13 @@ export default function MailboxesPage() {
         return mailboxes.filter(m => {
             const email = (m.username || m.email || '').toLowerCase();
             const d = (m.domain || email.split('@')[1] || '').toLowerCase();
-            
+
             // Domain filter match
             const matchesDomain = filterDomain === 'All Domains' ? true : d === filterDomain.toLowerCase();
-            
+
             // Text filter match
             const matchesSearch = email.includes(searchTerm.toLowerCase());
-            
+
             return matchesDomain && matchesSearch;
         });
     }, [mailboxes, searchTerm, filterDomain]);
@@ -250,7 +326,7 @@ export default function MailboxesPage() {
                         <Filter size={16} />
                         Filter Domain
                     </button>
-                    <select 
+                    <select
                         style={{ border: '1px solid #e5e7eb', borderRadius: '8px', padding: '8px 12px', fontSize: '0.875rem', backgroundColor: '#ffffff', color: '#4b5563', outline: 'none' }}
                         value={filterDomain}
                         onChange={(e) => setFilterDomain(e.target.value)}
@@ -298,15 +374,15 @@ export default function MailboxesPage() {
                     const usedValue = Number(mailbox.quota_used || 0);
                     const status = mailbox.active === 1 || mailbox.active === true ? 'active' : 'suspended';
                     const lastLogin = formatLastAccess(mailbox.last_login || mailbox.last_imap_login);
-                    
+
                     let percent = Number(mailbox.percent_used) || 0;
                     if (!percent && quotaValue > 0) {
                         percent = (usedValue / quotaValue) * 100;
                     }
 
-                    const quotaStr = quotaValue > 0 ? formatBytes(quotaValue) : 'Unlimited'; 
+                    const quotaStr = quotaValue > 0 ? formatBytes(quotaValue) : 'Unlimited';
                     const usedStr = formatBytes(usedValue);
-                    
+
                     const displayPercent = percent > 0 && percent < 0.1 ? percent.toFixed(3) : percent.toFixed(1);
 
                     return (
@@ -355,7 +431,8 @@ export default function MailboxesPage() {
                             <td>
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                                     <button onClick={() => handleResetPassword(email)} title="Reset Password" style={{ padding: '8px', color: '#9ca3af' }}><Lock size={16} /></button>
-                                    <button onClick={() => handleSuspendToggle(email, status === 'active')} title={status === 'active' ? "Suspend" : "Activate"} style={{ padding: '8px', color: status === 'suspended' ? '#f59e0b': '#9ca3af' }}><Ban size={16} /></button>
+                                    <button onClick={() => handleSuspendToggle(email, status === 'active')} title={status === 'active' ? "Suspend" : "Activate"} style={{ padding: '8px', color: status === 'suspended' ? '#f59e0b' : '#9ca3af' }}><Ban size={16} /></button>
+                                    <button onClick={() => openQuotaModal(email, quotaValue)} title="Update Quota" style={{ padding: '8px', color: '#9ca3af' }}><HardDrive size={16} /></button>
                                     <button onClick={() => handleDelete(email)} title="Delete" style={{ padding: '8px', color: '#ef4444' }}><Trash2 size={16} /></button>
                                 </div>
                             </td>
@@ -369,8 +446,8 @@ export default function MailboxesPage() {
                 onClose={() => setIsModalOpen(false)}
                 title="Create New Mailbox"
             >
-                <form 
-                    style={{ display: 'flex', flexDirection: 'column', gap: '16px' }} 
+                <form
+                    style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}
                     onSubmit={handleCreateMailbox}
                 >
                     <div style={{ display: 'grid', gridTemplateColumns: '3fr 2fr', gap: '12px' }}>
@@ -381,17 +458,17 @@ export default function MailboxesPage() {
                                 placeholder="e.g. info"
                                 style={{ padding: '10px 16px', border: '1px solid #e5e7eb', borderRadius: '8px', outline: 'none', fontWeight: 500 }}
                                 value={formData.localPart}
-                                onChange={(e) => setFormData({...formData, localPart: e.target.value})}
+                                onChange={(e) => setFormData({ ...formData, localPart: e.target.value })}
                                 required
                             />
                         </div>
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
                             <label style={{ fontSize: '0.875rem', fontWeight: 600, color: '#374151', textAlign: 'center' }}>Domain</label>
                             {domains.length > 0 ? (
-                                <select 
+                                <select
                                     style={{ padding: '10px 16px', border: '1px solid #e5e7eb', borderRadius: '8px', outline: 'none', backgroundColor: '#f9fafb', fontWeight: 500 }}
                                     value={formData.domain}
-                                    onChange={(e) => setFormData({...formData, domain: e.target.value})}
+                                    onChange={(e) => setFormData({ ...formData, domain: e.target.value })}
                                     required
                                 >
                                     {domains.map(d => (
@@ -399,12 +476,12 @@ export default function MailboxesPage() {
                                     ))}
                                 </select>
                             ) : (
-                                <input 
+                                <input
                                     type="text"
                                     placeholder="Enter domain"
                                     style={{ padding: '10px 16px', border: '1px solid #e5e7eb', borderRadius: '8px', outline: 'none', backgroundColor: '#f9fafb', fontWeight: 500 }}
                                     value={formData.domain}
-                                    onChange={(e) => setFormData({...formData, domain: e.target.value})}
+                                    onChange={(e) => setFormData({ ...formData, domain: e.target.value })}
                                     required
                                 />
                             )}
@@ -417,7 +494,7 @@ export default function MailboxesPage() {
                             placeholder="Minimum 8 characters"
                             style={{ padding: '10px 16px', border: '1px solid #e5e7eb', borderRadius: '8px', outline: 'none' }}
                             value={formData.password}
-                            onChange={(e) => setFormData({...formData, password: e.target.value})}
+                            onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                             required
                         />
                         <span style={{ fontSize: '0.75rem', color: '#6b7280', marginTop: '2px' }}>
@@ -431,7 +508,7 @@ export default function MailboxesPage() {
                                 type="number"
                                 style={{ flex: 1, padding: '10px 16px', border: '1px solid #e5e7eb', borderRadius: '8px', outline: 'none' }}
                                 value={formData.quotaMB}
-                                onChange={(e) => setFormData({...formData, quotaMB: Number(e.target.value)})}
+                                onChange={(e) => setFormData({ ...formData, quotaMB: Number(e.target.value) })}
                                 required
                             />
                             <div style={{ display: 'flex', alignItems: 'center', padding: '0 16px', backgroundColor: '#f3f4f6', borderRadius: '8px', fontWeight: 700, color: '#6b7280', fontSize: '0.875rem' }}>MB</div>
@@ -454,6 +531,62 @@ export default function MailboxesPage() {
                             disabled={creating}
                         >
                             {creating ? 'Creating...' : 'Create Account'}
+                        </button>
+                    </div>
+                </form>
+            </Modal>
+
+            <Modal
+                isOpen={isQuotaModalOpen}
+                onClose={() => setIsQuotaModalOpen(false)}
+                title="Update Storage Quota"
+            >
+                <form
+                    style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}
+                    onSubmit={handleUpdateQuotaSubmit}
+                >
+                    <p style={{ fontSize: '0.875rem', color: '#6b7280', margin: 0 }}>
+                        Update the storage limit for <strong>{quotaModalEmail}</strong>.
+                    </p>
+
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                        <label style={{ fontSize: '0.875rem', fontWeight: 600, color: '#374151' }}>Mailbox Quota</label>
+                        <div style={{ display: 'flex', gap: '8px' }}>
+                            <input
+                                type="number"
+                                style={{ flex: 1, padding: '10px 16px', border: '1px solid #e5e7eb', borderRadius: '8px', outline: 'none' }}
+                                value={quotaInput}
+                                onChange={(e) => setQuotaInput(e.target.value)}
+                                min="1"
+                                required
+                            />
+                            <select
+                                style={{ border: '1px solid #e5e7eb', borderRadius: '8px', padding: '10px 16px', fontSize: '0.875rem', backgroundColor: '#f9fafb', color: '#4b5563', outline: 'none', fontWeight: 600 }}
+                                value={quotaUnit}
+                                onChange={handleUnitChange}
+                            >
+                                <option value="MB">MB</option>
+                                <option value="GB">GB</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div style={{ display: 'flex', gap: '12px', paddingTop: '16px' }}>
+                        <button
+                            type="button"
+                            onClick={() => setIsQuotaModalOpen(false)}
+                            style={{ flex: 1, padding: '12px', border: '1px solid #e5e7eb', borderRadius: '12px', fontWeight: 700, color: '#4b5563', backgroundColor: '#ffffff' }}
+                            disabled={updatingQuota}
+                        >
+                            Cancel
+                        </button>
+                        <button
+                            type="submit"
+                            className={styles.primaryButton}
+                            style={{ flex: 1, justifyContent: 'center', padding: '12px', borderRadius: '12px', opacity: updatingQuota ? 0.7 : 1 }}
+                            disabled={updatingQuota}
+                        >
+                            {updatingQuota ? 'Updating...' : 'Save Changes'}
                         </button>
                     </div>
                 </form>
