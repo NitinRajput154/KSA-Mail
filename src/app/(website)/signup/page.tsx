@@ -13,7 +13,6 @@ export default function Signup() {
     const [formData, setFormData] = useState({
         fullName: '',
         username: '',
-        recoveryEmail: '',
         phoneNumber: '',
         password: '',
         confirmPassword: '',
@@ -30,12 +29,6 @@ export default function Signup() {
     const [phoneOtpLoading, setPhoneOtpLoading] = useState(false);
     const [phoneVerifyLoading, setPhoneVerifyLoading] = useState(false);
 
-    // ─── Email OTP State ─────────────────────────────────────
-    const [emailOtpCode, setEmailOtpCode] = useState('');
-    const [showEmailOtpInput, setShowEmailOtpInput] = useState(false);
-    const [isEmailVerified, setIsEmailVerified] = useState(false);
-    const [emailOtpLoading, setEmailOtpLoading] = useState(false);
-    const [emailVerifyLoading, setEmailVerifyLoading] = useState(false);
 
     // ─── Username check State ────────────────────────────────
     const [usernameAvailable, setUsernameAvailable] = useState<boolean | null>(null);
@@ -56,11 +49,8 @@ export default function Signup() {
         if (name === 'username') {
             setUsernameAvailable(null);
         }
-        // Reset email verification when email changes
-        if (name === 'recoveryEmail') {
-            setIsEmailVerified(false);
-            setShowEmailOtpInput(false);
-            setEmailOtpCode('');
+        if (name === 'username') {
+            setUsernameAvailable(null);
         }
     };
 
@@ -141,56 +131,6 @@ export default function Signup() {
         }
     };
 
-    // ═══════════════════════════════════════════════════════════
-    // EMAIL OTP
-    // ═══════════════════════════════════════════════════════════
-    const handleSendEmailOtp = async () => {
-        const email = formData.recoveryEmail.trim();
-        if (!email) { setError('Please enter your recovery email'); return; }
-
-        setEmailOtpLoading(true);
-        setError('');
-        try {
-            const response = await fetch(`${API_BASE}/auth/send-email-otp`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email }),
-            });
-            const data = await response.json();
-            if (!response.ok) throw new Error(data.message || 'Failed to send email OTP');
-
-            setShowEmailOtpInput(true);
-            setSuccess(`Verification code sent to ${email}`);
-        } catch (err: any) {
-            setError(err.message);
-        } finally {
-            setEmailOtpLoading(false);
-        }
-    };
-
-    const handleVerifyEmailOtp = async () => {
-        if (!emailOtpCode || emailOtpCode.length < 4) { setError('Please enter a valid OTP'); return; }
-
-        setEmailVerifyLoading(true);
-        setError('');
-        try {
-            const response = await fetch(`${API_BASE}/auth/verify-email-otp`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email: formData.recoveryEmail.trim(), otp: emailOtpCode }),
-            });
-            const data = await response.json();
-            if (!response.ok) throw new Error(data.message || 'Email OTP verification failed');
-
-            setIsEmailVerified(true);
-            setShowEmailOtpInput(false);
-            setSuccess('Recovery email verified successfully!');
-        } catch (err: any) {
-            setError(err.message);
-        } finally {
-            setEmailVerifyLoading(false);
-        }
-    };
 
     // ═══════════════════════════════════════════════════════════
     // SUBMIT REGISTRATION
@@ -214,7 +154,6 @@ export default function Signup() {
                     name: formData.fullName,
                     username: formData.username,
                     phone: formData.phoneNumber.trim(),
-                    recoveryEmail: formData.recoveryEmail || undefined,
                     password: formData.password,
                 }),
             });
@@ -335,60 +274,6 @@ export default function Signup() {
                                 )}
                             </div>
 
-                            {/* Recovery Email + Verification */}
-                            <div className={styles.inputGroup}>
-                                <label htmlFor="recoveryEmail">Recovery Email</label>
-                                <div className={styles.inputWithAction}>
-                                    <input
-                                        id="recoveryEmail"
-                                        name="recoveryEmail"
-                                        type="email"
-                                        placeholder="personal@gmail.com"
-                                        value={formData.recoveryEmail}
-                                        onChange={handleChange}
-                                        disabled={isEmailVerified}
-                                    />
-                                    {!isEmailVerified && formData.recoveryEmail && (
-                                        <button
-                                            type="button"
-                                            className={styles.verifyButton}
-                                            onClick={handleSendEmailOtp}
-                                            disabled={emailOtpLoading || !formData.recoveryEmail}
-                                        >
-                                            {emailOtpLoading ? 'Sending...' : showEmailOtpInput ? 'Resend' : 'Verify'}
-                                        </button>
-                                    )}
-                                </div>
-                                {isEmailVerified && (
-                                    <span className={styles.verifiedBadge}><Check size={14} /> Verified</span>
-                                )}
-
-                                {/* Email OTP Input */}
-                                {showEmailOtpInput && !isEmailVerified && (
-                                    <div className={styles.otpGroup}>
-                                        <div className={styles.otpHeader}>
-                                            <span>Enter OTP sent to your email</span>
-                                        </div>
-                                        <div className={styles.otpInputWrapper}>
-                                            <input
-                                                type="text"
-                                                maxLength={6}
-                                                placeholder="000000"
-                                                value={emailOtpCode}
-                                                onChange={(e) => setEmailOtpCode(e.target.value.replace(/\D/g, ''))}
-                                            />
-                                            <button
-                                                type="button"
-                                                className={styles.confirmOtpButton}
-                                                onClick={handleVerifyEmailOtp}
-                                                disabled={emailVerifyLoading || emailOtpCode.length < 4}
-                                            >
-                                                {emailVerifyLoading ? 'Verifying...' : 'Confirm'}
-                                            </button>
-                                        </div>
-                                    </div>
-                                )}
-                            </div>
 
                             {/* Phone Number + OTP Verification */}
                             <div className={styles.inputGroup}>

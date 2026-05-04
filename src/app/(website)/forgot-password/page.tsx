@@ -140,7 +140,7 @@ export default function ForgotPassword() {
                     <>
                         <div className={styles.cardHeader}>
                             <h2>Forgot Password</h2>
-                            <p>Enter your KSA Mail address and we'll send an OTP to your registered recovery contact.</p>
+                            <p>Enter your KSA Mail address and we'll send an OTP to your verified phone number.</p>
                         </div>
                         <form className={styles.form} onSubmit={handleInitiate}>
                             <div className={styles.inputGroup}>
