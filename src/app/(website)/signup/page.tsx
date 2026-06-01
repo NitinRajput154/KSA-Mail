@@ -240,7 +240,7 @@ export default function Signup() {
                                     id="fullName"
                                     name="fullName"
                                     type="text"
-                                    placeholder="Ahmed Al-Rashid"
+                                    placeholder="Enter your name here..."
                                     value={formData.fullName}
                                     onChange={handleChange}
                                     required
